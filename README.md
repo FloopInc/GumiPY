@@ -1,4 +1,4 @@
-## Telegram Bot Repository
+## GumiTL official repository
 
 This repository hosts a Telegram bot that serves as a versatile tool for various purposes. From managing tasks to providing information, this bot is designed to enhance your Telegram experience.
 
@@ -17,8 +17,10 @@ To get started with the Telegram bot, follow these steps:
 ### Usage
 Once the bot is up and running, you can interact with it using various commands to streamline your Telegram interactions.
 
-### Support
-For any issues or feedback, please open an issue on GitHub or reach out to the bot's developers.
+### Support & Note
+- For any issues or feedback, please open an issue on GitHub or reach out to the bot's developers.
+- Hardcoded 100% cuz im not good at python.
+- 
 
 ### License
 This project is licensed under the MIT License - see the LICENSE.md file for details.
