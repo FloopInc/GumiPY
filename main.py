@@ -9,10 +9,12 @@ from auth.register import register, unregister, is_registered
 
 with open('config.json') as config_file:
     config_data = json.load(config_file)
+    ownerID = config_data["Owner"]
     botToken = config_data["TOKEN"]
     botUsername = config_data["username"]
 TOKEN: Final = botToken
 BOT_USERNAME: Final = botUsername
+
 
 def handle_response(text: str) -> str:
     processed: str = text.lower()
@@ -46,6 +48,9 @@ async def unregister_command(update: Update, context: ContextTypes.DEFAULT_TYPE)
     message_text = update.message.text.strip()
     args = message_text.split(" ")
 
+    if not ownerID == user_id:
+        await update.message.reply_text("You are not authorized to use this command.")
+        return
     
     if len(args) == 1:
         await update.message.reply_text("Please provide a user ID to unregister.")
