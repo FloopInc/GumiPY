@@ -7,6 +7,6 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.message.from_user.id
 
     if not is_registered(user_id):
-        await update.message.reply_text("You are not registered. Please register using /register <email> <password>.")
+        await update.message.reply_text("You are not registered. Please register using /register <password>.")
     else:
         await update.message.reply_text(f"Welcome back, {update.message.from_user.first_name}!")

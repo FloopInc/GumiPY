@@ -1,14 +1,19 @@
 import json
-import uuid
-import hashlib
 import os
 
+from typing import Final
+from telegram import Update
+from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters
+
 STATUS_FILE = 'user/UserStatus.json'
+REGISTER_PASSWORD = "OZMoon"
 
 def load_user_status():
     if os.path.exists(STATUS_FILE):
         with open(STATUS_FILE, 'r') as f:
-            return json.load(f)
+            data = json.load(f)
+            if isinstance(data, dict): 
+                return data
     return {}
 
 def save_user_status(user_status):
@@ -17,27 +22,26 @@ def save_user_status(user_status):
 
 def is_registered(user_id):
     user_status = load_user_status()
-    return str(user_id) in user_status
+    return user_status.get(str(user_id), {}).get('registered', False)
 
-def register(email, password, user_id):
-    if not email or not password:
-        return {"message": "Invalid email or password"}
-
-    hashed_password = hashlib.sha256(password.encode()).hexdigest()
-    filename = str(uuid.uuid4()) + ".json"
-
-    try:
-        with open(f"user/auth/{filename}", "w", encoding="utf-8") as json_file:
-            json.dump({"email": email, "hashed_password": hashed_password}, json_file, indent=4)
-
-        user_status = load_user_status()
-        user_status[str(user_id)] = {"email": email, "filename": filename}
+def unregister(user_id):
+    user_status = load_user_status()
+    if str(user_id) in user_status:
+        user_status[str(user_id)]['registered'] = False
         save_user_status(user_status)
+        return {"message": "Unregistration successful. User can no longer use bot commands."}
+    return {"message": "User not found."}
 
-        return {"message": "Account created successfully"}
-    except PermissionError as e:
-        print(f"Error creating user file: Insufficient permissions. ({e})")
-        return {"message": "Registration failed. The bot may lack permissions to create files."}
-    except Exception as e:
-        print(f"Error creating user file: {e}")
-        return {"message": "Registration failed. Please try again later."}
+def register(user_id, password):
+    if password != REGISTER_PASSWORD:
+        return {"message": "Invalid password"}
+
+    user_status = load_user_status()
+
+    if not isinstance(user_status, dict):
+        return {"message": "Internal error: User status file is corrupted."}
+
+    user_status[str(user_id)] = {"registered": True}
+    save_user_status(user_status)
+
+    return {"message": "Registration successful. You can now use all bot commands."}
