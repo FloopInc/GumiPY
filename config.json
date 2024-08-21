@@ -1,5 +1,6 @@
 {
     "Owner": OWNER_ID_HERE,
     "TOKEN": "BOT_TOKEN_HERE",
+    "url": "DISPATCH_URL_HERE",
     "username": "BOT_USERNAME"
 }
