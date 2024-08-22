@@ -1,6 +1,6 @@
-# Auto detect text files and perform LF normalization
-* text=auto
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
+command/__pycache__/
+auth/__pycache__/
