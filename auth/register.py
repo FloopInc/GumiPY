@@ -24,7 +24,7 @@ def register(user_id,password):
 	if password!=REGISTER_PASSWORD:return{_A:'Invalid password'}
 	A=load_user_status()
 	if not isinstance(A,dict):return{_A:'Internal error: User status file is corrupted.'}
-	A[str(user_id)]={_B:True};save_user_status(A);return{_A:'Registration successful. You can now use all bot commands.'}
+	A[str(user_id)][_B]=True;save_user_status(A);return{_A:'Registration successful. You can now use all bot commands.'}
 def ban(user_id):
 	B=user_id;A=load_user_status()
 	if str(B)in A:A[str(B)][_D]=True;save_user_status(A);return{_A:'User has been banned.'}
