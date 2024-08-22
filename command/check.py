@@ -1,18 +1,18 @@
 _A='utf-8'
 import requests,base64,json,re,logging
-from typing import Final
 from telegram import Update
-from telegram.ext import Application,CommandHandler,ContextTypes,MessageHandler,filters
-from auth.register import register,is_registered
+from telegram.ext import ContextTypes
+from auth.register import is_registered,is_banned
 with open('config.json')as config_file:config_data=json.load(config_file)
 log_file_path='log/logs.json'
 if not log_file_path:
 	with open(log_file_path,'w')as log_file:log_file.write('[]')
 async def check_version(update,context):
-	A=update;N=A.message.from_user.id;F=A.message.text.strip();C=F.split(' ')[1]if len(F.split(' '))>1 else None
+	A=update;F=A.message.text.strip();C=F.split(' ')[1]if len(F.split(' '))>1 else None
+	if is_banned(A.message.from_user.id):await A.message.reply_text('Sorry, but you have been banned from using this bot. If you believe this is a mistake, please contact support @ozmoon1337.');return
 	if not is_registered(A.message.from_user.id):await A.message.reply_text('You are not registered. Please register using /register <password>.');return
 	if not C:await A.message.reply_text('Please provide a version number.');return
-	K=config_data['url'];L=base64.b64decode(K).decode(_A);G=f"{L}{C}&language_type=3&platform_type=1&channel_id=1&sub_channel_id=1&is_new_format=1";B=requests.get(G);O=B.content
+	K=config_data['url'];L=base64.b64decode(K).decode(_A);G=f"{L}{C}&language_type=3&platform_type=1&channel_id=1&sub_channel_id=1&is_new_format=1";B=requests.get(G);N=B.content
 	try:
 		B=requests.get(G);B.raise_for_status();D=base64.b64decode(B.content);M=decode_protobuf_message(D).get('msg','No Message Found');H=f"""Response Status Code: {B.status_code}
 
