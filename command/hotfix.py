@@ -13,7 +13,9 @@ async def hotfix_command(update,context):
 	if not is_registered(D):await B.message.reply_text('You are not registered. Please register using /register <password>.');return
 	A=load_hotfix_data()
 	if A is None:await B.message.reply_text('Hotfix data not found.');return
-	E=f"""Hotfix URLs for Version 2.4:
+	E=f"""Hotfix URLs for Honkai Star Rail Version {A.get("version","No version found.")}:
+
+dispatch seed: {A.get("dispatchSeed","No seed found.")}
 
 assetBundleUrl:
 
