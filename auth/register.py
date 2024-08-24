@@ -27,7 +27,7 @@ def register(user_id,password):
 	A[str(user_id)][_B]=True;save_user_status(A);return{_A:'Registration successful. You can now use all bot commands.'}
 def ban(user_id):
 	B=user_id;A=load_user_status()
-	if str(B)in A:A[str(B)][_D]=True;save_user_status(A);return{_A:'User has been banned.'}
+	if str(B)in A:A[str(B)][_D]=True;A[str(B)][_B]=_C;save_user_status(A);return{_A:'User has been banned.'}
 	return{_A:_E}
 def unban(user_id):
 	B=user_id;A=load_user_status()

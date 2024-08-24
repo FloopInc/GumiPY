@@ -4,7 +4,7 @@ from telegram import Update
 from telegram.ext import Application,CommandHandler,ContextTypes,MessageHandler,filters
 import json
 from command import help,start,check,ban,unban,hotfix
-from auth.register import register,unregister,is_registered
+from auth.register import register,unregister,is_registered,is_banned
 with open('config.json')as config_file:config_data=json.load(config_file);ownerID=config_data['Owner'];botToken=config_data['TOKEN'];botUsername=config_data['username']
 TOKEN=botToken
 BOT_USERNAME=botUsername
@@ -15,6 +15,7 @@ def handle_response(text):
 async def handle_message(update,context):A=update;B=A.message.chat.type;C=A.message.text;print(f"Received message from user ({A.message.chat.id}) in {B}: {C}")
 async def register_command(update,context):
 	A=update;B=A.message.from_user.id;C=A.message.text.strip();D=C.split(' ')[1]if len(C.split(' '))>1 else None
+	if is_banned(B):await A.message.reply_text('You are banned from using this bot. If you believe this is a mistake, please contact support @ozmoon1337.');return
 	if is_registered(B):await A.message.reply_text('Hey, You are already registered! You dont have to use /register command again, Type /help for a list of commands');return
 	E=register(B,D);await A.message.reply_text(E[_A])
 async def unregister_command(update,context):
