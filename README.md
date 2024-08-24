@@ -7,6 +7,8 @@ So I decided to make it public here. Because I am the owner or who create this p
 ### Features
 - Task Management: Organize your tasks efficiently with the bot's task management capabilities.
 - Information Retrieval: Get quick access to relevant information through the bot's intuitive commands.
+- Economy System (WIP) : Manage your finances with the bot's economy system.
+- Advanced Security System : Manage User account security with the bot's advanced security system.
 - Customization: Tailor the bot to suit your needs with customizable settings.
 
 ### Installation
@@ -16,8 +18,17 @@ To get started with the Telegram bot, follow these steps:
 3. Configure the bot with your Telegram API key.
 4. Run the bot application.
 
-### Usage
-Once the bot is up and running, you can interact with it using various commands to streamline your Telegram interactions.
+### List Command
+``` 
+/help. Get started help with bot
+/start. Start New Journey with Bot
+/check [version]. Dispatch Checker For some Anime Game
+/ban [user]. Ban User From Using Bot
+/unban [user]. Unban User
+/register [password]. Register Account to Use Bot Feature
+/unregister [user]. Unregister Account 
+/hotfix. Hotfix Checker For some Anime Game
+```
 
 ### Support & Note
 - For any issues or feedback, please open an issue on GitHub or reach out to the bot's developers.
