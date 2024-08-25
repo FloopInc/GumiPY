@@ -4,14 +4,14 @@ This repository hosts a Telegram bot that serves as a versatile tool for various
 
 So I decided to make it public here. Because I am the owner or who create this project, and using template on Internet, and I can do whatever I want to make this public or private
 
-### Features
-- Task Management: Organize your tasks efficiently with the bot's task management capabilities.
-- Information Retrieval: Get quick access to relevant information through the bot's intuitive commands.
-- Economy System (WIP) : Manage your finances with the bot's economy system.
-- Advanced Security System : Manage User account security with the bot's advanced security system.
-- Customization: Tailor the bot to suit your needs with customizable settings.
+### 💡 Features & Function
+- [√] Task Management: Organize your tasks efficiently with the bot's task management capabilities.
+- [√] Information Retrieval: Get quick access to relevant information through the bot's intuitive commands.
+- [√] Economy System (WIP) : Manage your finances with the bot's economy system.
+- [√] Advanced Security System : Manage User account security with the bot's advanced security system.
+- [√] Customization: Tailor the bot to suit your needs with customizable settings.
 
-### Installation
+### 🍗 Installation
 To get started with the Telegram bot, follow these steps:
 1. Clone the repository.
 2. Install the necessary dependencies.
@@ -32,10 +32,14 @@ To get started with the Telegram bot, follow these steps:
 
 ### Support & Note
 - For any issues or feedback, please open an issue on GitHub or reach out to the bot's developers.
-- Hardcoded 100% cuz im not good at python.
+- Hardcoded 99% because i am new currently learning python.
 - Use this project as a template if you want to make a Telegram Bot. You can add features according to the logic of your code
 
-### Status: Finished at [7f91c55](https://github.com/FloopInc/GumiTL/commit/7f91c552961db735bd2fbe237b13e5ab9ff28e9d) Running Normally !
+### Status: Finished at [d907dbc](https://github.com/FloopInc/GumiTL/commit/d907dbc92b164b34e6a5dc163534110e4d417b75) Running Normally !
+
+## ❓ Help or issue
+- Unclean Codes
+- Hardcoded
 
 ### License
 This project is licensed under the MIT License - see the LICENSE.md file for details.
