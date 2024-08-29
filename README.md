@@ -13,16 +13,18 @@ So I decided to make it public here. Because I am the owner or who create this p
 
 ### 🍗 Installation
 To get started with the Telegram bot, follow these steps:
-1. Clone the repository.
-2. Install the necessary dependencies.
-3. Configure the bot with your Telegram API key.
-4. Run the bot application.
+1. Open Console/bash
+2. Clone the repository.
+3. Install the necessary dependencies using `pip install -r requirements.txt` on your console.
+4. Configure the bot with your Telegram API key and other settings.
+5. Run the bot application using `python main.py` on your console or just run start.bat.
 
 ### List Command
 ``` 
 /help. Get started help with bot
 /start. Start New Journey with Bot
 /check [version]. Dispatch Checker For some Anime Game
+/info. Information Retrieval
 /ban [user]. Ban User From Using Bot
 /unban [user]. Unban User
 /register [password]. Register Account to Use Bot Feature
