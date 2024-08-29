@@ -1,11 +1,9 @@
 from telegram import Update
 from telegram.ext import ContextTypes
-import json
-from auth.register import is_banned,unban
-with open('config.json')as config_file:config_data=json.load(config_file);ownerID=config_data['Owner']
+from handler.register import isBanned,unban,getTextMap,loadConfig
 async def unban_command(update,context):
-	A=update;C=A.message.from_user.id;D=A.message.text.strip();B=D.split(' ')
-	if is_banned(A.message.from_user.id):await A.message.reply_text("Oh cmon you are already banned from using this bot and you're still trying unban someone/yourself?.  If you believe this is a mistake, please contact support @ozmoon1337.");return
-	if not ownerID==C:await A.message.reply_text('You are not authorized to use this command.');return
-	if len(B)==1:await A.message.reply_text('Please provide a user ID to unban.');return
-	E=B[1];F=unban(E);await A.message.reply_text(F['message'])
+	A=update;C=A.message.from_user.id;D=A.message.text.strip();E=loadConfig();B=D.split(' ')
+	if not E==C:await A.message.reply_text(getTextMap('onlyOwner'));return
+	if isBanned(A.message.from_user.id):await A.message.reply_text(getTextMap('userBanned'));return
+	if len(B)==1:await A.message.reply_text(getTextMap('notFound'));return
+	F=B[1];G=unban(F);await A.message.reply_text(G['message'])

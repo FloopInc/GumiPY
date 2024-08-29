@@ -1,0 +1,20 @@
+{
+    "isBanned": "Sorry, but you have been banned from using this bot. If you believe this is a mistake, please contact support @ozmoon1337.",
+    "notRegistered": "You are not registered. Please register using /register <password> to fully access the bot.",
+    "welcomeUnregistered": "Welcome to the bot. Please register using /register <password> to fully access the bot.",
+    "unregisterSuccess": "Unregistered successfully, user can no longer use bot commands.",
+    "registerSuccess": "Registered successfully, you can now use all bot commands.",
+    "invalidPassword": "Invalid/Wrong password. ",
+    "internalError": "Internal error: User status file is corrupted. ",
+    "userBanned": "Oh cmon you are already banned from using this bot and you're still trying to run this command?.  If you believe this is a mistake, please contact support @ozmoon1337.",
+    "banned": "User has been banned. ",
+    "unbanned": "User has been unbanned. ",
+    "notFound": "User Id/Name not found or invalid. Please Provide a valid user Id/Name.",
+    "provideVersion": "Please provide a version number. ",
+    "onlyOwner": "You don't have permission to use this command. Only the bot owner can use this command.",
+    "onlyOwner1": "You don't have authorization to use this feature, Only the bot owner can use/execute this feature.",
+    "notHavePerms": "You don't have permission to use this command. Please contact the bot owner.",
+    "registered": "Hey, You are already registered! You dont have to use /register command again, Type /help for a list of commands",
+    "errorRequest": "An error occurred while processing your request. Please try again later."
+}
+  

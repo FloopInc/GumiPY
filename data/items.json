@@ -1,0 +1,42 @@
+{
+    "1001": {
+        "name": "Coin",
+        "logo": "💰",
+        "price": 500
+    },
+    "1002": {
+        "name": "Gold Coin",
+        "logo": "💰",
+        "price": 1000
+    },
+    "1003": {
+        "name": "Blue Gem Coin",
+        "logo": "💎",
+        "price": 2000
+    },
+    "1004": {
+        "name": "Inter Fate",
+        "logo": "🔮",
+        "price": 16000
+    },
+    "1005": {
+        "name": "Bucks",
+        "logo": "📦",
+        "price": 500
+    },
+    "1006": {
+        "name": "Crown Title",
+        "logo": "👑",
+        "price": 500000
+    },
+    "1007": {
+        "name": "Mystery Box",
+        "logo": "🎁",
+        "price": 800
+    },
+    "1008": {
+        "name": "Super Mystery Box",
+        "logo": "🎁",
+        "price": 1000
+    }
+}
