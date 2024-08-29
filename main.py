@@ -3,7 +3,7 @@ from typing import Final
 from telegram import Update
 from telegram.ext import Application,CommandHandler,ContextTypes,MessageHandler,filters,CallbackQueryHandler
 import json
-from command import sourcecode,help,start,check,ban,unban,hotfix,info,gacha
+from command import help,start,check,ban,unban,hotfix,info,gacha
 from handler.register import register,unregister,isRegistered,isBanned,getTextMap,loadConfig
 with open('data/config.json')as config_file:config_data=json.load(config_file);botToken=config_data['TOKEN'];botUsername=config_data['username']
 TOKEN=botToken
@@ -31,4 +31,4 @@ async def unregister_command(update,context):
 			D=unregister(C);await A.message.reply_text(D[_A])
 	except Exception as H:print(f"Error during unregister command: {H}");await A.message.reply_text(getTextMap('errorRequest'))
 async def error(update,context):print(f"Update {update} caused error {context.error}")
-if __name__=='__main__':print('Starting bot...');app=Application.builder().token(TOKEN).build();app.add_handler(CommandHandler('start',start.start_command));app.add_handler(CommandHandler('help',help.help_command));app.add_handler(CommandHandler('sourcecode',sourcecode.sourcecode_command));app.add_handler(CommandHandler('check',check.check_version));app.add_handler(CommandHandler('ban',ban.ban_command));app.add_handler(CommandHandler('unban',unban.unban_command));app.add_handler(CommandHandler('hotfix',hotfix.hotfix_command));app.add_handler(CommandHandler('info',info.info_command));app.add_handler(CommandHandler('gacha',gacha.gacha_command));app.add_handler(CommandHandler('register',register_command));app.add_handler(CommandHandler('unregister',unregister_command));app.add_handler(MessageHandler(filters.TEXT&~filters.COMMAND,handle_message));app.add_error_handler(error);print('Polling bot...');app.run_polling(poll_interval=5)
+if __name__=='__main__':print('Starting bot...');app=Application.builder().token(TOKEN).build();app.add_handler(CommandHandler('start',start.start_command));app.add_handler(CommandHandler('help',help.help_command));app.add_handler(CommandHandler('check',check.check_version));app.add_handler(CommandHandler('ban',ban.ban_command));app.add_handler(CommandHandler('unban',unban.unban_command));app.add_handler(CommandHandler('hotfix',hotfix.hotfix_command));app.add_handler(CommandHandler('info',info.info_command));app.add_handler(CommandHandler('gacha',gacha.gacha_command));app.add_handler(CommandHandler('register',register_command));app.add_handler(CommandHandler('unregister',unregister_command));app.add_handler(MessageHandler(filters.TEXT&~filters.COMMAND,handle_message));app.add_error_handler(error);print('Polling bot...');app.run_polling(poll_interval=5)

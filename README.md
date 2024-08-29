@@ -35,12 +35,14 @@ To get started with the Telegram bot, follow these steps:
 ### Support & Note
 - For any issues or feedback, please open an issue on GitHub or reach out to the bot's developers.
 - Hardcoded 99% because i am new currently learning python.
+- Minified codes for some reason, if you want unminified version please do it ur self.
 - Use this project as a template if you want to make a Telegram Bot. You can add features according to the logic of your code
 
-### Status: Finished at [d907dbc](https://github.com/FloopInc/GumiTL/commit/d907dbc92b164b34e6a5dc163534110e4d417b75) Running Normally !
+### Status: Finished at [a9115cf](https://github.com/FloopInc/GumiTL/commit/a9115cf5b38d468ced1e847054acd1a5e924fce0) For Stable Version !
 
 ## ❓ Help or issue
 - Unclean Codes
+- Some function not handled properly
 - Hardcoded
 
 ### License
