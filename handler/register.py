@@ -1,5 +1,6 @@
-_E='notFound'
-_D='isBanned'
+_F='notFound'
+_E='isBanned'
+_D=True
 _C=False
 _B='registered'
 _A='message'
@@ -24,21 +25,22 @@ def loadTextMap():
 TextMap=loadTextMap()
 def getTextMap(key):A=loadTextMap();return A.get(key,'')
 def isRegistered(user_id):A=loadUserStatus();return A.get(str(user_id),{}).get(_B,_C)
-def isBanned(user_id):A=loadUserStatus();return A.get(str(user_id),{}).get(_D,True)
+def isMod(user_id):A=loadUserStatus();return A.get(str(user_id),{}).get('isModerator',_D)
+def isBanned(user_id):A=loadUserStatus();return A.get(str(user_id),{}).get(_E,_D)
 def unregister(user_id):
 	B=user_id;A=loadUserStatus()
 	if str(B)in A:A[str(B)][_B]=_C;saveUserStatus(A);return{_A:getTextMap('unregisterSuccess')}
-	return{_A:getTextMap(_E)}
+	return{_A:getTextMap(_F)}
 def register(user_id,password):
 	if password!=PASSWORD:return{_A:getTextMap('invalidPassword')}
 	A=loadUserStatus()
 	if not isinstance(A,dict):return{_A:getTextMap('internalError')}
-	A[str(user_id)][_B]=True;saveUserStatus(A);return{_A:getTextMap('registerSuccess')}
+	A[str(user_id)][_B]=_D;saveUserStatus(A);return{_A:getTextMap('registerSuccess')}
 def ban(user_id):
 	B=user_id;A=loadUserStatus()
-	if str(B)in A:A[str(B)][_D]=True;A[str(B)][_B]=_C;saveUserStatus(A);return{_A:getTextMap('banned')}
-	return{_A:getTextMap(_E)}
+	if str(B)in A:A[str(B)][_E]=_D;A[str(B)][_B]=_C;saveUserStatus(A);return{_A:getTextMap('banned')}
+	return{_A:getTextMap(_F)}
 def unban(user_id):
 	B=user_id;A=loadUserStatus()
-	if str(B)in A:A[str(B)][_D]=_C;saveUserStatus(A);return{_A:getTextMap('unbanned')}
-	return{_A:getTextMap(_E)}
+	if str(B)in A:A[str(B)][_E]=_C;saveUserStatus(A);return{_A:getTextMap('unbanned')}
+	return{_A:getTextMap(_F)}

@@ -1,6 +1,6 @@
 from telegram import Update
 from telegram.ext import ContextTypes
-from auth.profile import inspectProfile,loadUserProfile
+from handler.profile import inspectProfile,loadUserProfile
 from handler.register import isBanned,isRegistered,getTextMap,loadConfig
 import json
 with open('data/items.json','r')as file:items_data=json.load(file)
