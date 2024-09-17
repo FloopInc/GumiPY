@@ -2,7 +2,7 @@ from typing import Final
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters, CallbackQueryHandler, CallbackContext
 import json,os,time,psutil,sys
-from command import sourcecode, help, start, check, ban, unban, hotfix, info, gacha, give,store,event,sb,mods
+from command import help, start, check, ban, unban, hotfix, info, gacha, give,store,event,sb,mods, setacc
 from handler.event import getEventMessage
 from handler.register import register, unregister, isRegistered, isBanned, getTextMap, loadConfig
 
@@ -28,7 +28,6 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text: str = update.message.text
 
     print(f"Received message from user ({update.message.chat.id}) in {message_type}: {text}")
-
     
 async def ping_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.message.from_user.id
@@ -130,36 +129,6 @@ async def register_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     registration_response = register(user_id, password)
     await update.message.reply_text(registration_response["message"])
 
-async def unregister_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user_id = update.message.from_user.id
-    message_text = update.message.text.strip()
-    args = message_text.split(" ")
-
-    if not ownerID == user_id:
-        await update.message.reply_text(getTextMap("onlyOwner"))
-        return
-    
-    if len(args) == 1:
-        await update.message.reply_text(getTextMap("notFound"))
-        return
-
-    targetUserId = args[1]
-
-    try:
-        if targetUserId == str(user_id):
-            result = unregister(user_id)
-            await update.message.reply_text(result["message"])
-        else:
-            if not isRegistered(targetUserId):
-                await update.message.reply_text(getTextMap("notFound"))
-                return
-
-            result = unregister(targetUserId)
-            await update.message.reply_text(result["message"])
-    except Exception as e:
-        print(f"Error during unregister command: {e}")
-        await update.message.reply_text(getTextMap("errorRequest"))
-
 async def error(update: Update, context: ContextTypes.DEFAULT_TYPE):
     print(f'Update {update} caused error {context.error}')
 
@@ -169,7 +138,6 @@ if __name__ == "__main__":
 
     app.add_handler(CommandHandler("start", start.start_command))
     app.add_handler(CommandHandler("help", help.help_command))
-    app.add_handler(CommandHandler("sourcecode", sourcecode.sourcecode_command))
     app.add_handler(CommandHandler("check", check.check_version))
     app.add_handler(CommandHandler("ban", ban.ban_command))
     app.add_handler(CommandHandler("unban", unban.unban_command))
@@ -181,6 +149,7 @@ if __name__ == "__main__":
     app.add_handler(CommandHandler("event", event.event_command))
     app.add_handler(CommandHandler("sb", sb.sb_command))
     app.add_handler(CommandHandler("mods", mods.mods_command))
+    app.add_handler(CommandHandler("setacc", setacc.setacc_command))
     
     app.add_handler(CommandHandler("radio", radio_command))
     app.add_handler(CommandHandler("ping", ping_command))
