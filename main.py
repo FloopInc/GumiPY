@@ -19,7 +19,7 @@ def handle_response(text: str) -> str:
     processed: str = text.lower()
 
     if 'hello' in processed:
-        return 'Halo juga ada yg bisa dibanting?'
+        return 'Hello there ! How can I help you today ? contact moderators for help /mods'
 
     return 'I am sorry, I do not understand.'
 
@@ -28,6 +28,23 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text: str = update.message.text
 
     print(f"Received message from user ({update.message.chat.id}) in {message_type}: {text}")
+    if message_type == 'group':
+        if not isRegistered(update.message.from_user.id):
+            await update.message.reply_text(getTextMap("notRegistered"))
+            return
+        if BOT_USERNAME in text:
+            new_text: str = text.replace(BOT_USERNAME, "").strip()
+            response: str = handle_response(new_text)
+        else:
+            return
+    else:
+        if not isRegistered(update.message.from_user.id):
+            await update.message.reply_text(getTextMap("notRegistered"))
+            return
+        response: str = handle_response(text)
+
+    print('Bot:', response)
+    await update.message.reply_text(response)
     
 async def ping_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.message.from_user.id
