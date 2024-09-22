@@ -1,11 +1,13 @@
 from typing import Final
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters, CallbackQueryHandler, CallbackContext
-import json,os,time,psutil,sys
-from command import help, start, check, ban, unban, hotfix, info, gacha, give,store,event,sb,mods, setacc
-from handler.event import getEventMessage
+import json,os,time,psutil,tempfile
+from command import help, start, check, ban, unban, hotfix, info, gacha, give,store,event,sb,mods 
 from handler.broadcast import radio_command
-from handler.register import register, register_command, isRegistered, isBanned, getTextMap, loadConfig
+from handler.event import getEventMessage
+from handler.register import isRegistered, isBanned, getTextMap, loadConfig, register_command
+from PIL import Image
+from rembg import remove
 
 with open('data/config.json') as config_file:
     config_data = json.load(config_file)
@@ -14,7 +16,7 @@ with open('data/config.json') as config_file:
 TOKEN: Final = botToken
 BOT_USERNAME: Final = botUsername
 ownerID = loadConfig()
-
+    
 def handle_response(text: str) -> str:
     processed: str = text.lower()
 
@@ -93,6 +95,26 @@ async def ping_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await update.message.reply_text(response)
 
+def remove_background(input_image_path, output_image_path):
+    input_image = Image.open(input_image_path)
+    output_image = remove(input_image)
+    output_image.save(output_image_path)
+
+async def removebg_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    photo = update.message.photo[-1]
+    file = await context.bot.get_file(photo.file_id)
+    
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        input_image_path = os.path.join(tmpdirname, 'input_image.png')
+        output_image_path = os.path.join(tmpdirname, 'output_image.png')
+
+        await file.download_to_drive(input_image_path)
+
+        remove_background(input_image_path, output_image_path)
+
+        with open(output_image_path, 'rb') as output_image_file:
+            await update.message.reply_photo(photo=output_image_file)
+
 async def error(update: Update, context: ContextTypes.DEFAULT_TYPE):
     print(f'Update {update} caused error {context.error}')
 
@@ -113,11 +135,11 @@ if __name__ == "__main__":
     app.add_handler(CommandHandler("event", event.event_command))
     app.add_handler(CommandHandler("sb", sb.sb_command))
     app.add_handler(CommandHandler("mods", mods.mods_command))
-    app.add_handler(CommandHandler("setacc", setacc.setacc_command))
     
     app.add_handler(CommandHandler("radio", radio_command))
     app.add_handler(CommandHandler("ping", ping_command))
     app.add_handler(CommandHandler("register", register_command))
+    app.add_handler(MessageHandler(filters.PHOTO, removebg_command))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
     app.add_error_handler(error)
