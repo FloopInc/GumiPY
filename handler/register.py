@@ -5,6 +5,8 @@ _C=False
 _B='registered'
 _A='message'
 import json,os
+from telegram import Update
+from telegram.ext import ContextTypes
 STATUSFILE='data/UserStatus.json'
 PASSWORD='OZMoon'
 TEXTMAP='data/TextMap.json'
@@ -44,3 +46,8 @@ def unban(user_id):
 	B=user_id;A=loadUserStatus()
 	if str(B)in A:A[str(B)][_E]=_C;saveUserStatus(A);return{_A:getTextMap('unbanned')}
 	return{_A:getTextMap(_F)}
+async def register_command(update,context):
+	A=update;B=A.message.from_user.id;C=A.message.text.strip();D=C.split(' ')[1]if len(C.split(' '))>1 else None
+	if isBanned(B):await A.message.reply_text(getTextMap(_E));return
+	if isRegistered(B):await A.message.reply_text(getTextMap(_B));return
+	E=register(B,D);await A.message.reply_text(E[_E])

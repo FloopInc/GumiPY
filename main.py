@@ -4,9 +4,9 @@ from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandl
 import json,os,time,psutil,sys
 from command import help, start, check, ban, unban, hotfix, info, gacha, give,store,event,sb,mods, setacc
 from handler.event import getEventMessage
-from handler.register import register, unregister, isRegistered, isBanned, getTextMap, loadConfig
+from handler.broadcast import radio_command
+from handler.register import register, register_command, isRegistered, isBanned, getTextMap, loadConfig
 
-sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
 with open('data/config.json') as config_file:
     config_data = json.load(config_file)
     botToken = config_data["TOKEN"]
@@ -93,59 +93,6 @@ async def ping_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await update.message.reply_text(response)
 
-async def radio_command(update: Update, context: CallbackContext):
-    user_id = update.message.from_user.id
-
-    if isBanned(user_id):
-        await update.message.reply_text(getTextMap("isBanned"))
-        return
-    if not isRegistered(user_id):
-        await update.message.reply_text(getTextMap("notRegistered"))
-        return
-    
-    user_status_filepath = 'data/UserStatus.json'
-    if not os.path.exists(user_status_filepath):
-        await update.message.reply_text("User status file not found.")
-        return
-    
-    with open(user_status_filepath, 'r') as f:
-        user_status = json.load(f)
-    
-    user_status[str(user_id)]["isRadio"] = not user_status[str(user_id)].get("isRadio", False)
-    
-    # Save updated status
-    with open(user_status_filepath, 'w') as f:
-        json.dump(user_status, f, indent=4)
-    
-    current_status = "enabled" if user_status[str(user_id)]["isRadio"] else "disabled"
-
-    if current_status == "enabled":
-        msg = getTextMap("radioEnabled")
-    else:
-        msg = getTextMap("radioDisabled")
-
-    eventMessage = getEventMessage()
-    if eventMessage:
-        msg += f"\n\n{eventMessage}"
-        
-    await update.message.reply_text(msg)
-
-async def register_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user_id = update.message.from_user.id
-    message_text = update.message.text.strip()
-    password = message_text.split(" ")[1] if len(message_text.split(" ")) > 1 else None
-
-    if isBanned(user_id):
-        await update.message.reply_text(getTextMap("isBanned"))
-        return
-    
-    if isRegistered(user_id):
-        await update.message.reply_text(getTextMap("registered"))
-        return
-    
-    registration_response = register(user_id, password)
-    await update.message.reply_text(registration_response["message"])
-
 async def error(update: Update, context: ContextTypes.DEFAULT_TYPE):
     print(f'Update {update} caused error {context.error}')
 
@@ -171,7 +118,6 @@ if __name__ == "__main__":
     app.add_handler(CommandHandler("radio", radio_command))
     app.add_handler(CommandHandler("ping", ping_command))
     app.add_handler(CommandHandler("register", register_command))
-    app.add_handler(CommandHandler("unregister", unregister_command))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
     app.add_error_handler(error)

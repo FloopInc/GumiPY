@@ -1,10 +1,9 @@
 import json
 import os
 from telegram import Update
-from telegram.ext import ContextTypes
-from handler.register import loadConfig
+from telegram.ext import ContextTypes, CallbackContext
+from handler.register import loadConfig, loadUserProfile, saveUserProfile, getTextMap, isBanned, isRegistered
 from handler.event import getEventMessage
-from handler.profile import saveUserProfile, loadUserProfile
 
 async def handleBroadcast(update: Update, context: ContextTypes.DEFAULT_TYPE, message: str):
     user_id = update.message.from_user.id
@@ -66,3 +65,39 @@ async def handleBroadcast(update: Update, context: ContextTypes.DEFAULT_TYPE, me
             print(f"Failed to send message to {uid}: {e}")
 
     await update.message.reply_text("Broadcast message sent to users.")
+
+async def radio_command(update: Update, context: CallbackContext):
+    user_id = update.message.from_user.id
+
+    if isBanned(user_id):
+        await update.message.reply_text(getTextMap("isBanned"))
+        return
+    if not isRegistered(user_id):
+        await update.message.reply_text(getTextMap("notRegistered"))
+        return
+    
+    user_status_filepath = 'data/UserStatus.json'
+    if not os.path.exists(user_status_filepath):
+        await update.message.reply_text("User status file not found.")
+        return
+    
+    with open(user_status_filepath, 'r') as f:
+        user_status = json.load(f)
+    
+    user_status[str(user_id)]["isRadio"] = not user_status[str(user_id)].get("isRadio", False)
+    
+    with open(user_status_filepath, 'w') as f:
+        json.dump(user_status, f, indent=4)
+    
+    current_status = "enabled" if user_status[str(user_id)]["isRadio"] else "disabled"
+
+    if current_status == "enabled":
+        msg = getTextMap("radioEnabled")
+    else:
+        msg = getTextMap("radioDisabled")
+
+    eventMessage = getEventMessage()
+    if eventMessage:
+        msg += f"\n\n{eventMessage}"
+        
+    await update.message.reply_text(msg)
