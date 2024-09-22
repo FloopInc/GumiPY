@@ -101,19 +101,50 @@ def remove_background(input_image_path, output_image_path):
     output_image.save(output_image_path)
 
 async def removebg_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    photo = update.message.photo[-1]
-    file = await context.bot.get_file(photo.file_id)
+    user_id = update.message.from_user.id
+
+    if isBanned(user_id):
+        await update.message.reply_text(getTextMap("isBanned"))
+        return
+
+    if not isRegistered(user_id):
+        await update.message.reply_text(getTextMap("notRegistered"))
+        return
     
-    with tempfile.TemporaryDirectory() as tmpdirname:
-        input_image_path = os.path.join(tmpdirname, 'input_image.png')
-        output_image_path = os.path.join(tmpdirname, 'output_image.png')
+    await update.message.reply_text("Please upload an image, and I'll remove the background!")
 
-        await file.download_to_drive(input_image_path)
+    context.user_data[user_id] = "waiting_for_image"
 
-        remove_background(input_image_path, output_image_path)
+async def handle_image(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = update.message.from_user.id
 
-        with open(output_image_path, 'rb') as output_image_file:
-            await update.message.reply_photo(photo=output_image_file)
+    if context.user_data.get(user_id) == "waiting_for_image":
+        await update.message.reply_text("Processing your image... This might take a few seconds.")
+
+        photo = update.message.photo[-1]
+        file = await context.bot.get_file(photo.file_id)
+
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            input_image_path = os.path.join(tmpdirname, 'input_image.png')
+            output_image_path = os.path.join(tmpdirname, 'output_image.png')
+
+            await file.download_to_drive(input_image_path)
+
+            try:
+                remove_background(input_image_path, output_image_path)
+
+                with open(output_image_path, 'rb') as output_image_file:
+                    await update.message.reply_photo(photo=output_image_file)
+
+                await update.message.reply_text("Done! Here's your image with the background removed.")
+
+            except Exception as e:
+                await update.message.reply_text(getTextMap('errorRequest') + str(e))
+
+        context.user_data[user_id] = None
+
+    else:
+        await update.message.reply_text("Please run /removebg first and then upload an image.")
 
 async def error(update: Update, context: ContextTypes.DEFAULT_TYPE):
     print(f'Update {update} caused error {context.error}')
@@ -139,7 +170,8 @@ if __name__ == "__main__":
     app.add_handler(CommandHandler("radio", radio_command))
     app.add_handler(CommandHandler("ping", ping_command))
     app.add_handler(CommandHandler("register", register_command))
-    app.add_handler(MessageHandler(filters.PHOTO, removebg_command))
+    app.add_handler(CommandHandler("removebg", removebg_command))
+    app.add_handler(MessageHandler(filters.PHOTO, handle_image))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
     app.add_error_handler(error)
