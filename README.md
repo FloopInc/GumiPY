@@ -26,7 +26,7 @@ To get started with the Telegram bot, follow these steps:
 - For any issues or feedback, please open an issue on GitHub or reach out to the bot's developers.
 - Hardcoded 99% because i am new currently learning python.
 - This project copy version of my old telegram bot project but rewritten using python.
-- Since Commit [4626a6b](https://github.com/FloopInc/GumiPY/commit/4626a6bba2ba93255c27fe17f3468748ca05babd), I've created a private fork for the development version of this bot. all tests are done and tried many times in the repo, I will merge to main branch asap when it's ready.
+- Since Commit [4626a6b](https://github.com/FloopInc/GumiPY/tree/4626a6bba2ba93255c27fe17f3468748ca05babd), I've created a private fork for the development version of this bot. all tests are done and tried many times in the repo, I will merge to main branch asap when it's ready.
 
 ### List Command
 ``` 
