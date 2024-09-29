@@ -1,13 +1,16 @@
-## GumiTL official repository
+## GumiPY - official repository
 
-This repository hosts a Telegram bot that serves as a versatile tool for educational purposes. 
+This repository hosts a Telegram bot that serves as a versatile tool for various purposes and educational purposes. 
 I decided to make it public here. Because I am the owner or who create this project, and using template on Internet, and I can do whatever I want to make this public or private
+
+## Requirements
+- [Python 3.9](https://www.python.org/downloads/) or higher
 
 ### 💡 Features & Function
 - [√] Information Retrieval: Get quick access to relevant information through the bot's intuitive commands.
 - [√] Economy System : Manage your finances with the bot's economy system.
 - [√] Public Broadcast System : Send Public Broadcasts to all Bot users with the bot's public broadcast system.
-- [√] Annual Events (WIP): Participate in annual events and get exclusive rewards with the bot's annual event system.
+- [√] Annual Events : Participate in annual events and get exclusive rewards with the bot's annual event system.
 - [√] Advanced Security System : Manage User account security with the bot's advanced security system.
 - [√] Customization: Tailor the bot to suit your needs with customizable settings.
 
@@ -18,6 +21,12 @@ To get started with the Telegram bot, follow these steps:
 3. Install the necessary dependencies using `pip install -r requirements.txt` on your console.
 4. Configure the bot with your Telegram API key and other settings.
 5. Run the bot application using `python main.py` on your console or just run start.bat.
+
+### Support & Note
+- For any issues or feedback, please open an issue on GitHub or reach out to the bot's developers.
+- Hardcoded 99% because i am new currently learning python.
+- This project copy version of my old telegram bot project but rewritten using python.
+- Since Commit [4626a6b](https://github.com/FloopInc/GumiPY/commit/4626a6bba2ba93255c27fe17f3468748ca05babd), I've created a private fork for the development version of this bot. all tests are done and tried many times in the repo, I will merge to main branch asap when it's ready.
 
 ### List Command
 ``` 
@@ -35,22 +44,17 @@ To get started with the Telegram bot, follow these steps:
 /give <user> <item-name> <quantity>. Give Item To Another User
 /unban <user>. Unban User
 /register <password>. Register Account to Use Bot Feature
-/event. <event-name Toggle Annual Events
-/setacc <username> <value>. Set Account Value
+/setacc <username/userid> <value>. Edit Account Information
+/removebg. Remove Background
+/redeemcode <code>. Redeem Code
+/event. <event-name> Toggle Annual Events
 /hotfix. Hotfix Checker For some Anime Game
 ```
-
-### Support & Note
-- For any issues or feedback, please open an issue on GitHub or reach out to the bot's developers.
-- Hardcoded 99% because i am new currently learning python.
-- This project copy my old telegram bot project but rewritten using python 
-
-### Status: Finished at [6e3feac](https://github.com/FloopInc/GumiTL/tree/6e3feac8dbb56cabbb93f448be8f1e050b58f613) For Stable Version !
-
 ## ❓ Help or issue
 - Unclean & Minified Codes
 - Hardcoded
+- Function not handled properly
 - A rarely bug Connection issue if you host it using server (idk?! i think its just me lol)
 
 ### License
-This project is licensed under the MIT License - see the LICENSE.md file for details.
+This project is licensed under the GPL-3.0 license - see the LICENSE file for details.
