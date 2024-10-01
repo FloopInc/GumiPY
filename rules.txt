@@ -1,0 +1,36 @@
+**Bot Usage Rules**  
+_Last Updated: [03/9/2024]_
+
+1. **Respect Telegram Terms of Service (ToS)**  
+All users must adhere to [Telegram's Terms of Service](https://telegram.org/tos) when using this bot. Any violation of these terms will lead to immediate suspension or permanent ban.
+
+2. **No Spam or Malicious Behavior**  
+Any form of spamming, scamming, phishing, or attempting to exploit the bot or its systems will result in a permanent ban. This includes, but is not limited to, sending unsolicited links, advertisements, or harmful scripts.
+
+3. **Respect Moderators and Owner**  
+The bot is managed by **/mods** and the **Owner**, who have the authority to enforce rules and handle user issues. Disturbing, harassing, or attempting to bypass their decisions will not be tolerated. Moderators assist the Developer in managing bot operations, interacting with users, and enforcing these rules. **Do not ping, annoy, or interfere with their duties** unless it's for legitimate reasons.
+
+4. **Avoid Abusive Language or Harassment**  
+Any form of harassment, inappropriate language, or hate speech will result in disciplinary action. This bot aims to provide a safe and friendly environment for all users.
+
+5. **Illegal Activities**  
+Engaging in illegal activities, such as sharing copyrighted content without permission, distributing illegal materials, or using the bot for fraudulent purposes, will result in a report to Telegram and possibly legal authorities.
+
+6. **Bot Exploitation and Automation**  
+Automating interactions with the bot using scripts, bots, or unauthorized third-party software is prohibited. Any user found exploiting bugs, using cheats, or otherwise abusing the system will face permanent suspension.
+
+7. **Account Sharing and Selling**  
+Sharing, trading, or selling bot accounts is strictly forbidden. Your account and any progress made with the bot must remain under your sole control.
+
+8. **Feedback and Support**  
+Moderators and the Owner are always open to feedback and inquiries related to the bot. However, please ensure your feedback is constructive and follows proper channels. If you encounter issues, please contact the bot or moderators using /mods or other support options.
+
+9. **Moderators & Their Role**  
+Moderators assist the Developer in managing the bot and oversee all Customer Support matters. They enforce the rules and punish those who breach them. Moderators are here to help with issues, answer questions, and ensure that users have a smooth experience. **Do not disturb them with unnecessary or unrelated matters**.
+
+10. **Reporting Violations**  
+If you witness any behavior that violates these rules, please report it to the moderators or the Owner. Abuse of the report system will lead to penalties.
+
+--- Owner & Moderators --- 
+
+If you need assistance or have any questions, feel free to contact the moderators via /mods or reach out to the bot's support team.

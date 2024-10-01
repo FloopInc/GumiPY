@@ -94,6 +94,10 @@ async def ping_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         response += f"\n\n{eventMessage}"
 
     await update.message.reply_text(response)
+async def rules_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    with open('rules.txt', 'r') as file:
+        rules_text = file.read()
+    await update.message.reply_text(rules_text, parse_mode="Markdown")
 
 def remove_background(input_image_path, output_image_path):
     input_image = Image.open(input_image_path)
@@ -167,6 +171,7 @@ if __name__ == "__main__":
     app.add_handler(CommandHandler("sb", sb.sb_command))
     app.add_handler(CommandHandler("mods", mods.mods_command))
     
+    app.add_handler(CommandHandler("rules", rules_command))
     app.add_handler(CommandHandler("radio", radio_command))
     app.add_handler(CommandHandler("ping", ping_command))
     app.add_handler(CommandHandler("register", register_command))
