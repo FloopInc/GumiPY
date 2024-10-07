@@ -67,7 +67,7 @@ def unregister(user_id):
 	return{_A:getTextMap(_H)}
 def register(user_id,password):
 	C=password;A=user_id;B=loadUserStatus();D=B.get(str(A),{}).get(_K,'')
-	if C!=PASSWORD:print(f"[{int(time.time())%86400//3600:02d}:{int(time.time())%3600//60:02d}:{time.time()%60:02.0f}] [{Fore.RED}ERROR{Style.RESET_ALL}] User {A}/{D} Input Invalid Password during register account: {C}");return{_A:getTextMap('invalidPassword')}
+	if C!=PASSWORD:print(f"[{int(time.time())%86400//3600:02d}:{int(time.time())%3600//60:02d}:{time.time()%60:02.0f}] [{Fore.RED}ERROR{Style.RESET_ALL}] User {A}/{D} Input Invalid Password during register account.");return{_A:getTextMap('invalidPassword')}
 	if not isinstance(B,dict):return{_A:getTextMap('internalError')}
 	B[str(A)][_D]=True;saveUserStatus(B);print(f"[{int(time.time())%86400//3600:02d}:{int(time.time())%3600//60:02d}:{time.time()%60:02.0f}] [{Fore.BLUE}INFO{Style.RESET_ALL}] User {A}/{D} registered account.");return{_A:getTextMap('registerSuccess')}
 def ban(user_id,reason='',duration=0):
