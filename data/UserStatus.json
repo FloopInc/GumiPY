@@ -1,10 +1,11 @@
 {
     "123": {
-        "username": "TestAccount",
+        "username": "Test",
         "registered": false,
         "isBanned": false,
         "isModerator": false,
         "isHidden": false,
-        "isRadio": true
+        "isRadio": true,
+        "banExpires": 0
     }
 }
