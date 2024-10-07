@@ -1,16 +1,35 @@
 from telegram import Update
 from telegram.ext import CallbackContext
-from handler.register import loadUserStatus,saveUserStatus,getTextMap
-async def mods_command(update,context):
-	L='mods';K='\n\n';J='isModerator';F='hidden';E=False;B=update;C=B.message.from_user.id;A=loadUserStatus();I=context.args
-	if str(C)in A and A[str(C)].get(J,E):
-		if len(I)>0 and I[0].lower()=='hide':
-			M=A[str(C)].get(F,E);A[str(C)][F]=not M;saveUserStatus(A)
-			if A[str(C)][F]:await B.message.reply_text(getTextMap('modHide'))
-			else:await B.message.reply_text(getTextMap('modShow'))
-			return
-	G=[]
-	for(O,H)in A.items():
-		if H.get(J,E)and not H.get(F,E):N='@'+H.get('username','Unknown');G.append(N)
-	if not G:D='Moderator List: (All are hidden)';D+=K+getTextMap(L);await B.message.reply_text(D)
-	else:D='Moderator List: '+', '.join(G);D+=K+getTextMap(L);await B.message.reply_text(D)
+from handler.register import loadUserStatus, saveUserStatus, getTextMap
+
+async def mods_command(update: Update, context: CallbackContext):
+    user_id = update.message.from_user.id
+    user_status = loadUserStatus()
+    args = context.args
+
+    if str(user_id) in user_status and user_status[str(user_id) ].get("isModerator", False):
+        if len(args) > 0 and args[0].lower() == "hide":
+            current_status = user_status[str(user_id) ].get("hidden", False)
+            user_status[str(user_id)]["hidden"] = not current_status
+            saveUserStatus(user_status)
+
+            if user_status[str(user_id)]["hidden"]:
+                await update.message.reply_text(getTextMap("modHide"))
+            else: 
+                await update.message.reply_text(getTextMap("modShow"))
+            return
+        
+    mods_list = []
+    for mod_id, status in user_status.items():
+        if status.get("isModerator", False) and not status.get("hidden", False):
+            username = "@" + status.get("username", "Unknown")
+            mods_list.append(username)
+
+    if not mods_list:
+        mods_message = "Moderator Available List: (All are hidden/not available)"
+        mods_message += ("\n\n" + getTextMap("mods"))
+        await update.message.reply_text(mods_message)
+    else:
+        mods_message = "Moderator Available List: " + ", ".join(mods_list)
+        mods_message += ("\n\n" + getTextMap("mods"))
+        await update.message.reply_text(mods_message)

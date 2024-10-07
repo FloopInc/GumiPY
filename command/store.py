@@ -5,7 +5,7 @@ from handler.store import getStoreItems,buyItem,sellItem
 from handler.register import isRegistered,isBanned,getTextMap
 async def store_command(update,context):
 	N='sell';M='message';L='buy';G=' ';B=update;I=getStoreItems();A=context.args
-	if isBanned(B.message.from_user.id):await B.message.reply_text(getTextMap('isBanned'));return
+	if isBanned(B.message.from_user.id):await B.message.reply_text(isBanned(B.message.from_user.id),parse_mode='Markdown');return
 	if not isRegistered(B.message.from_user.id):await B.message.reply_text(getTextMap('notRegistered'));return
 	if A:
 		J=A[0].lower()

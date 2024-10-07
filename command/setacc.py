@@ -1,19 +1,22 @@
 from telegram import Update
 from telegram.ext import CallbackContext
-from handler.register import loadUserStatus,saveUserStatus,getTextMap,loadConfig,isRegistered,isBanned
+from handler.register import loadUserStatus,saveUserStatus,getTextMap,loadOwner
 async def setacc_command(update,context):
-	P='isRadio';O='isHidden';N='isModerator';L='registered';K=context;J='OFF';I='ON';H=False;B=update;Q=loadConfig()
-	if not Q==B.message.from_user.id:await B.message.reply_text(getTextMap('onlyOwner1'));return
-	if isBanned(B.message.from_user.id):await B.message.reply_text(getTextMap('isBanned'));return
-	if not isRegistered(B.message.from_user.id):await B.message.reply_text(getTextMap('notRegistered'));return
-	if len(K.args)<2:await B.message.reply_text(getTextMap('editUsage'));return
-	F=K.args[0];E=K.args[1].lower();C=loadUserStatus();D=None
-	for(M,R)in C.items():
-		if str(M)==F or R.get('username','').lower()==F.lower():D=M;break
-	if D is None:await B.message.reply_text(getTextMap('notFound'));return
-	if E=='moderator'or E=='mod':A=C[D].get(N,H);C[D][N]=not A;G=f"Set Moderator for {F} to {I if not A else J}."
-	elif E=='hide'or E=='hidden':A=C[D].get(O,H);C[D][O]=not A;G=f"Set Hidden for {F} to {I if not A else J}."
-	elif E=='register'or E=='regist'or E==L or E=='reg':A=C[D].get(L,H);C[D][L]=not A;G=f"Set Registered for {F} to {I if not A else J}."
-	elif E=='radio':A=C[D].get(P,H);C[D][P]=not A;G=f"Set Radio for {F} to {I if not A else J}."
-	else:await B.message.reply_text(getTextMap('statsValue'));return
-	saveUserStatus(C);await B.message.reply_text(G)
+	R='banExpires';Q='isRadio';P='isBanned';O='isHidden';N='isModerator';L='registered';K=context;J='OFF';I='ON';H=False;G=update;S=loadOwner()
+	if not S==G.message.from_user.id:await G.message.reply_text(getTextMap('onlyOwner1'));return
+	if len(K.args)<2:await G.message.reply_text(getTextMap('setUsage'));return
+	E=K.args[0];D=K.args[1].lower();B=loadUserStatus();C=None
+	for(M,T)in B.items():
+		if str(M)==E or T.get('username','').lower()==E.lower():C=M;break
+	if C is None:await G.message.reply_text(getTextMap('notFound'));return
+	if D=='moderator'or D=='mod':A=B[C].get(N,H);B[C][N]=not A;F=f"Set Moderator for {E} to {I if not A else J}."
+	elif D=='hide'or D=='hidden':A=B[C].get(O,H);B[C][O]=not A;F=f"Set Hidden for {E} to {I if not A else J}."
+	elif D=='ban':A=B[C].get(P,H);B[C][P]=not A;F=f"Set Banned for {E} to {I if not A else J}."
+	elif D=='register'or D=='regist'or D==L or D=='reg':A=B[C].get(L,H);B[C][L]=not A;F=f"Set Registered for {E} to {I if not A else J}."
+	elif D=='radio':A=B[C].get(Q,H);B[C][Q]=not A;F=f"Set Radio for {E} to {I if not A else J}."
+	elif D=='resetban'or D=='unban':
+		A=B[C].get(R,0)
+		if A==0:F=f"{E} is not banned.";return
+		B[C][R]=0;F=f"Reset Ban for {E}."
+	else:await G.message.reply_text(getTextMap('statsValue'));return
+	saveUserStatus(B);await G.message.reply_text(F)

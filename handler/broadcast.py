@@ -2,13 +2,13 @@ import json
 import os
 from telegram import Update
 from telegram.ext import ContextTypes, CallbackContext
-from handler.register import loadConfig, loadUserProfile, saveUserProfile, getTextMap, isBanned, isRegistered
+from handler.register import loadOwner, loadUserProfile, saveUserProfile, getTextMap, isBanned, isRegistered
 from handler.event import getEventMessage
 
 async def handleBroadcast(update: Update, context: ContextTypes.DEFAULT_TYPE, message: str):
     user_id = update.message.from_user.id
     user_filepath = f'user/{user_id}.json'
-    ownerID = loadConfig()
+    ownerID = loadOwner()
     
     # Check if user data exists
     if not os.path.exists(user_filepath):
@@ -70,7 +70,7 @@ async def radio_command(update: Update, context: CallbackContext):
     user_id = update.message.from_user.id
 
     if isBanned(user_id):
-        await update.message.reply_text(getTextMap("isBanned"))
+        await update.message.reply_text(isBanned(user_id), parse_mode="Markdown")
         return
     if not isRegistered(user_id):
         await update.message.reply_text(getTextMap("notRegistered"))

@@ -9,16 +9,16 @@ async def gacha_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     args = context.args
     
     if isBanned(user_id):
-        await update.message.reply_text(getTextMap("isBanned"))
+        await update.message.reply_text(isBanned(user_id), parse_mode="Markdown")
         return
     
     if not isRegistered(user_id):
         await update.message.reply_text(getTextMap("notRegistered"))
         return
     
-    boxIdorName = " ".join(args)
+    boxIdOrName = " ".join(args)
     
-    result = performGacha(user_id, boxIdorName)
+    result = performGacha(user_id, boxIdOrName)
     final_message = result["message"]
 
     event_message = getEventMessage()

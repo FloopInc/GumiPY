@@ -6,7 +6,7 @@ from handler.register import isRegistered,isBanned,getTextMap
 with open('data/config.json')as config_file:config_data=json.load(config_file)
 async def check_version(update,context):
 	A=update;F=A.message.text.strip();C=F.split(' ')[1]if len(F.split(' '))>1 else None
-	if isBanned(A.message.from_user.id):await A.message.reply_text(getTextMap('isBanned'));return
+	if isBanned(A.message.from_user.id):await A.message.reply_text(isBanned(A.message.from_user.id),parse_mode='Markdown');return
 	if not isRegistered(A.message.from_user.id):await A.message.reply_text(getTextMap('notRegistered'));return
 	if not C:await A.message.reply_text(getTextMap('provideVersion'));return
 	K=config_data['url'];L=base64.b64decode(K).decode(_A);G=f"{L}{C}&language_type=3&platform_type=1&channel_id=1&sub_channel_id=1&is_new_format=1";B=requests.get(G);N=B.content

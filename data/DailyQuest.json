@@ -1,0 +1,75 @@
+{
+    "questId1": {
+        "name": "Astral Chord",
+        "type": "Deliver",
+        "description": "questId1_description",
+        "give": [{"1001": 1}, {"1002": 1}],
+        "reward": [{"1000": 1}]
+    },
+    "questId2": {
+        "name": "Sunroom Siesta",
+        "type": "Questions",
+        "description": "",
+        "questions": "questId2_questions",
+        "answers": "questId2_answers",
+        "reward": [{"1003": 10}]
+    },
+    "questId3": {
+        "name": "Stellar Symphony",
+        "type": "Deliver",
+        "description": "",
+        "give": [{"1005": 1}, {"1001": 1}],
+        "reward": [{"1000": 1}]
+    },
+    "questId4": {
+        "name": "Flare Star Butterflies",
+        "type": "Deliver",
+        "description": "",
+        "give": [{"1000": 1}],
+        "reward": [{"1001": 1}]
+    },
+    "questId5": {
+        "name": "Youhu",
+        "type": "Deliver",
+        "description": "",
+        "give": [{"1001": 1}, {"1000": 1}],
+        "reward": [{"1002": 1}, {"1003": 1}]
+    },
+    "questId6": {
+        "name": "QuestId6",
+        "type": "Questions",
+        "description": "This is Description for QuestId6",
+        "questions": "questId6_questions",
+        "answers": "questId6_answers",
+        "reward": [{"1001": 1}]
+    },
+    "questId7": {
+        "name": "QuestId7",
+        "type": "Deliver",
+        "description": "This is Description for QuestId7",
+        "give": [{"1000": 500}],
+        "reward": [{"1000": 1}]
+    },
+    "questId8": {
+        "name": "QuestId8",
+        "type": "Deliver",
+        "description": "This is Description for QuestId8",
+        "give": [{"1000": 1}],
+        "reward": [{"1000": 1}]
+    },
+    "questId9": {
+        "name": "QuestId9",
+        "type": "Deliver",
+        "description": "This is Description for QuestId9",
+        "give": [{"1000": 1}, {"1001": 1}, {"1002": 2}],
+        "reward": [{"1001": 1}]
+    },
+    "questId10": {
+        "name": "QuestId10",
+        "type": "Questions",
+        "description": "This is Description for QuestId10",
+        "questions": "questId10_questions",
+        "answers": "questId10_answers",
+        "reward": [{"1000": 1}]
+    }
+}

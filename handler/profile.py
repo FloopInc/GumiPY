@@ -1,23 +1,59 @@
-import json,os
-from handler.register import loadUserStatus,loadConfig
-STATUSFILE='data/UserStatus.json'
-def loadUserProfile(user_id):
-	A=f"user/{user_id}.json"
-	if os.path.exists(A):
-		with open(A,'r')as B:return json.load(B)
-	return{}
-def saveUserProfile(user_id,profile_data):
-	A=f"user/{user_id}.json"
-	with open(A,'w')as B:json.dump(profile_data,B,indent=4)
+import json
+import os
+from handler.register import loadUserStatus, loadOwner, loadUserProfile, saveUserProfile
+
+STATUSFILE = 'data/UserStatus.json'
+# Path to redeem folder
+REDEEM_FOLDER = 'user/redeem/'
+
+def saveRedeemCode(code: str, redeem_data: dict):
+    code = code.lower()
+    filepath = f"{REDEEM_FOLDER}{code}.json"
+    os.makedirs(REDEEM_FOLDER, exist_ok=True)
+    with open(filepath, 'w') as f:
+        json.dump(redeem_data, f, indent=4)
+
+def loadRedeemCode(code: str):
+    code = code.lower()
+    filepath = f"{REDEEM_FOLDER}{code}.json"
+    if os.path.exists(filepath):
+        with open(filepath, 'r') as f:
+            return json.load(f)
+    return None
+
+def deleteRedeemCode(code: str):
+    code = code.lower()
+    filepath = f"{REDEEM_FOLDER}{code}.json"
+    if os.path.exists(filepath):
+        os.remove(filepath)
+
 def getUserIdFromUsername(username):
-	A=loadUserStatus()
-	for(B,C)in A.items():
-		if C.get('username','').lower()==username.lower():return B
+    userStatus = loadUserStatus()
+    for user_id, status in userStatus.items():
+        if status.get("username", "").lower() == username.lower():
+            return user_id
+    return None
+def getUsernameFromUserId(user_id):
+    userProfile = loadUserProfile(user_id)
+    return userProfile.get('name', 'user')
+
 def inspectProfile(user_id):
-	O='1010';N='1008';M='1007';L='1005';K='1003';J='1002';I='1001';H='1000';D='name';B=user_id;E=loadUserStatus();A=loadUserProfile(B);P=loadConfig();C={};F={'registered':'Account Registered','isBanned':'Account Banned'}
-	if B==P:C={B:A[B]for B in[D,H,I,J,K,L,M,N,O]if B in A}
-	elif str(B)in E:
-		for(G,Q)in E[str(B)].items():
-			if G in F:C[F[G]]='Yes'if Q else'No'
-		C.update({B:A[B]for B in[D,H,I,J,K,L,M,N,O]if B in A})
-	return C,A.get(D,'user')
+    userStatus = loadUserStatus()
+    userProfile = loadUserProfile(user_id)
+    ownerID = loadOwner()
+    profileInfo = {}
+
+    status_messages = {
+        "registered": "Account Registered"
+    }
+
+    if user_id == ownerID:
+        profileInfo = {key: userProfile[key] for key in ['name', '1000', '1001', '1002', '1003', '1005', '1007', '1008', '1010', '1011', '1012', '1013', '1014', '1015'] if key in userProfile}
+    elif str(user_id) in userStatus:
+        for key, value in userStatus[str(user_id)].items():
+            if key in status_messages:
+                profileInfo[status_messages[key]] = 'Yes' if value else 'No'
+        
+        profileInfo.update({key: userProfile[key] for key in ['name', '1000', '1001', '1002', '1003', '1005', '1007', '1008', '1010', '1011', '1012', '1013', '1014', '1015'] if key in userProfile})
+
+    return profileInfo, userProfile.get('name', 'user')

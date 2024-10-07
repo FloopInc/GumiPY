@@ -8,53 +8,53 @@ _G='sell'
 _F='buy'
 _E='logo'
 _D='untradeable'
-_C='name'
-_B='stock'
+_C='stock'
+_B='name'
 _A='message'
-import os,json,random
+import os,json,random,time,colorama
 from handler.economy import loadItems
 from handler.register import getTextMap
 def getStoreItems():
 	D=loadItems();B=[]
 	for(E,A)in D.items():
 		if A.get(_D):continue
-		if A[_B]==0:F=[_I,_J,_K,'Check back later!'];C=random.choice(F)
-		else:C=f"Stock: {A[_B]}"
-		B.append({'id':E,_C:A[_C],_E:A[_E],_F:A[_F],_G:A[_G],'stock_message':C})
+		if A[_C]==0:F=[_I,_J,_K,'Check back later!'];C=random.choice(F)
+		else:C=f"Stock: {A[_C]}"
+		B.append({'id':E,_B:A[_B],_E:A[_E],_F:A[_F],_G:A[_G],'stock_message':C})
 	return B
 def buyItem(user_id,item_name,quantity):
-	I=item_name;F=quantity;B=loadItems();G=f"user/{user_id}.json"
-	if not os.path.exists(G):return{_A:_L}
-	with open(G,'r')as C:D=json.load(C)
+	J=item_name;I=user_id;D=quantity;B=loadItems();H=f"user/{I}.json"
+	if not os.path.exists(H):return{_A:_L}
+	with open(H,'r')as E:F=json.load(E)
 	A=None
-	for(J,K)in B.items():
-		if K[_C].lower()==I.lower():A=J;break
-	if not A or A not in B:return{_A:f"Item '{I}' not found in store."}
-	E=B[A]
-	if E.get(_D):return{_A:getTextMap(_D)}
-	if E[_B]==0:return{_A:random.choice([_I,_J,_K])}
-	H=E[_F]*F
-	if D[_H]<H:return{_A:getTextMap('notEnoughMoney')}
-	D[_H]-=H;B[A][_B]-=F
-	if B[A][_B]<0:B[A][_B]=0
-	D.setdefault(A,0);D[A]+=F
-	with open(G,'w')as C:json.dump(D,C,indent=4)
-	with open(_M,'w')as C:json.dump(B,C,indent=4)
-	return{_A:f"Successfully purchased {F} x {E[_E]} {E[_C]} for {H} 💵 Money!"}
+	for(K,L)in B.items():
+		if L[_B].lower()==J.lower():A=K;break
+	if not A or A not in B:return{_A:f"Item '{J}' not found in store."}
+	C=B[A]
+	if C.get(_D):return{_A:getTextMap(_D)}
+	if C[_C]==0:return{_A:random.choice([_I,_J,_K])}
+	G=C[_F]*D
+	if F[_H]<G:return{_A:getTextMap('notEnoughMoney')}
+	F[_H]-=G;B[A][_C]-=D
+	if B[A][_C]<0:B[A][_C]=0
+	F.setdefault(A,0);F[A]+=D
+	with open(H,'w')as E:json.dump(F,E,indent=4)
+	with open(_M,'w')as E:json.dump(B,E,indent=4)
+	print(f"[{int(time.time())%86400//3600:02d}:{int(time.time())%3600//60:02d}:{time.time()%60:02.0f}] [{colorama.Fore.BLUE}INFO{colorama.Style.RESET_ALL}] User {I} bought {D} x {C[_B]} for {G} 💵 Money!");return{_A:f"Successfully purchased {D} x {C[_E]} {C[_B]} for {G} 💵 Money!"}
 def sellItem(user_id,item_name,quantity):
-	H=item_name;C=quantity;D=loadItems();G=f"user/{user_id}.json"
+	J=item_name;I=user_id;B=quantity;D=loadItems();G=f"user/{I}.json"
 	if not os.path.exists(G):return{_A:_L}
-	with open(G,'r')as E:B=json.load(E)
+	with open(G,'r')as E:C=json.load(E)
 	A=None
-	for(J,K)in D.items():
-		if K[_C].lower()==H.lower():A=J;break
-	if not A or A not in D:return{_A:f"Item '{H}' not found in inventory."}
+	for(K,L)in D.items():
+		if L[_B].lower()==J.lower():A=K;break
+	if not A or A not in D:return{_A:f"Item '{J}' not found in inventory."}
 	F=D[A]
 	if F.get(_D):return{_A:getTextMap(_D)}
-	if B.get(A,0)<C:return{_A:"You don't have that item to sell"}
-	I=F[_G]*C;B[A]-=C
-	if B[A]<0:B[A]=0
-	B[_H]+=I;D[A][_B]+=C
-	with open(G,'w')as E:json.dump(B,E,indent=4)
+	if C.get(A,0)<B:return{_A:"You don't have that item to sell"}
+	H=F[_G]*B;C[A]-=B
+	if C[A]<0:C[A]=0
+	C[_H]+=H;D[A][_C]+=B
+	with open(G,'w')as E:json.dump(C,E,indent=4)
 	with open(_M,'w')as E:json.dump(D,E,indent=4)
-	return{_A:f"Successfully sold {C} x {F[_E]} {F[_C]} for {I} 💵 Money!"}
+	print(f"[{int(time.time())%86400//3600:02d}:{int(time.time())%3600//60:02d}:{time.time()%60:02.0f}] [{colorama.Fore.BLUE}INFO{colorama.Style.RESET_ALL}] User {I} sold {B} x {F[_B]} for {H} 💵 Money!");return{_A:f"Successfully sold {B} x {F[_E]} {F[_B]} for {H} 💵 Money!"}

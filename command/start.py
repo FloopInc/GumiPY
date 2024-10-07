@@ -2,13 +2,47 @@ from telegram import Update
 from telegram.ext import ContextTypes
 from handler.event import getEventMessage
 from handler.economy import usercd
-from handler.register import isRegistered,isBanned,loadUserStatus,saveUserStatus,getTextMap
-async def start_command(update,context):
-	H='isBanned';C=False;A=update;B=A.message.from_user.id;I=A.message.from_user.username;D=loadUserStatus();E=A.message.from_user.first_name;usercd(B,E)
-	if str(B)not in D:D[str(B)]={'username':I,'registered':C,H:C,'isModerator':C,'isHidden':C,'isRadio':True};saveUserStatus(D);await A.message.reply_text(getTextMap('welcomeUnregistered'))
-	else:
-		if isBanned(B):await A.message.reply_text(getTextMap(H));return
-		if not isRegistered(B):await A.message.reply_text(getTextMap('notRegistered'));return
-		F=f"Welcome, {E}! To get started, type /help.";G=getEventMessage()
-		if G:F+=f"\n\n{G}"
-		await A.message.reply_text(F)
+from handler.register import isRegistered, isBanned, loadUserStatus, saveUserStatus, getTextMap, loadUserProfile
+import time
+from colorama import Fore, Style
+
+async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = update.message.from_user.id
+    username = update.message.from_user.username
+    userStatus = loadUserStatus()
+    userProfile = loadUserProfile(user_id)
+    name = update.message.from_user.first_name
+    
+    if str(user_id) not in userProfile:
+        usercd(user_id, name)
+
+    if str(user_id) not in userStatus:
+        userStatus[str(user_id)] = {
+            "username": username,
+            "registered": False,
+            "isBanned": False,
+            "isModerator": False,
+            "isHidden": False,
+            "isRadio": True,
+            "banExpires": 0
+            }
+        saveUserStatus(userStatus)
+        print(f"[{int(time.time()) % 86400 // 3600:02d}:{(int(time.time()) % 3600) // 60:02d}:{time.time() % 60:02.0f}] [{Fore.BLUE}INFO{Style.RESET_ALL}] User {user_id}/{username} started bot.")
+        await update.message.reply_text(getTextMap("welcomeUnregistered"))
+    else:
+        if isBanned(user_id):
+            await update.message.reply_text(isBanned(user_id), parse_mode="Markdown")
+            return
+        
+        if not isRegistered(user_id):
+            await update.message.reply_text(getTextMap("notRegistered"))
+            return
+        
+        welcome_message = f"Welcome, {name}! To get started, type /help."
+
+        event_message = getEventMessage()
+        if event_message:
+            welcome_message += f"\n\n{event_message}"
+
+        await update.message.reply_text(welcome_message)
+

@@ -5,7 +5,7 @@ _D='name'
 _C='w'
 _B='r'
 _A='message'
-import os,json,random
+import os,json,random,colorama,time
 def loadItems():
 	with open(_F,_B)as A:return json.load(A)
 def saveItems(items):
@@ -20,7 +20,7 @@ def usercd(user_id,username):
 	if os.path.exists(C):
 		with open(C,_B)as D:A=json.load(D)
 	else:A={}
-	A.setdefault(_D,username)
+	A.setdefault(_D,username);A.setdefault('dailyLogin',0);A.setdefault('lastClaimTime',0);A.setdefault('logs',[]);A.setdefault('banReason','');A.setdefault('1000',5000)
 	for(G,H)in F.items():A.setdefault(G,H)
 	with open(C,_C)as D:json.dump(A,D,indent=4)
 def performGacha(user_id,boxIdorName=None):
@@ -47,37 +47,37 @@ def performGacha(user_id,boxIdorName=None):
 	with open(E,_C)as D:json.dump(B,D,indent=4)
 	F=loadItems();N=f"Congratulations! From Gacha {F[A][P]} {F[A][_D]} You've received the following reward:\n";N+=f"{F[C[I]][P]} {F[C[I]][_D]} x{C[O]}";return{_A:N}
 def giveItem(from_user_id,toUserName,item_name,quantity):
-	K=toUserName;G=item_name;D=quantity;L=loadItemMapping();B=L.get(G)
-	if not B:return{_A:f"Item '{G}' not found."}
-	E=_E;H=os.path.join(E,f"{from_user_id}.json")
-	if not os.path.exists(H):return{_A:"Sender's data not found."}
-	with open(H,_B)as A:C=json.load(A)
+	L=from_user_id;H=toUserName;E=item_name;D=quantity;M=loadItemMapping();B=M.get(E)
+	if not B:return{_A:f"Item '{E}' not found."}
+	F=_E;I=os.path.join(F,f"{L}.json")
+	if not os.path.exists(I):return{_A:"Sender's data not found."}
+	with open(I,_B)as A:C=json.load(A)
 	if B not in C or C[B]<D:return{_A:'Insufficient quantity to give.'}
 	C[B]-=D
 	if C[B]<=0:C[B]=0
-	with open(H,_C)as A:json.dump(C,A,indent=4)
-	F=None
-	for I in os.listdir(E):
-		if I.endswith('.json'):
-			with open(os.path.join(E,I),_B)as A:
-				M=json.load(A)
-				if M.get(_D)==K:F=os.path.join(E,I);break
-	if not F:return{_A:_G}
-	with open(F,_B)as A:J=json.load(A)
-	J.setdefault(B,0);J[B]+=D
-	with open(F,_C)as A:json.dump(J,A,indent=4)
-	return{_A:f"Successfully gave {D} of item {G} to {K}."}
+	with open(I,_C)as A:json.dump(C,A,indent=4)
+	G=None
+	for J in os.listdir(F):
+		if J.endswith('.json'):
+			with open(os.path.join(F,J),_B)as A:
+				N=json.load(A)
+				if N.get(_D)==H:G=os.path.join(F,J);break
+	if not G:return{_A:_G}
+	with open(G,_B)as A:K=json.load(A)
+	K.setdefault(B,0);K[B]+=D
+	with open(G,_C)as A:json.dump(K,A,indent=4)
+	print(f"[{int(time.time())%86400//3600:02d}:{int(time.time())%3600//60:02d}:{time.time()%60:02.0f}] [{colorama.Fore.BLUE}INFO{colorama.Style.RESET_ALL}] {L}/{C[_D]} gave {D} of item {E} to {H}.");return{_A:f"Successfully gave {D} of item {E} to {H}."}
 def modGiveItem(from_user_id,toUserName,item_name,quantity):
-	I=quantity;H=item_name;G=toUserName;J=loadItemMapping();B=J.get(H)
+	F=quantity;E=item_name;D=toUserName;J=loadItemMapping();B=J.get(E)
 	if not B:return{_A:f"Item '{B}' not found."}
-	D=_E;C=None
-	for E in os.listdir(D):
-		if E.endswith('.json'):
-			with open(os.path.join(D,E),_B)as A:
+	G=_E;C=None
+	for H in os.listdir(G):
+		if H.endswith('.json'):
+			with open(os.path.join(G,H),_B)as A:
 				K=json.load(A)
-				if K.get(_D)==G:C=os.path.join(D,E);break
+				if K.get(_D)==D:C=os.path.join(G,H);break
 	if not C:return{_A:_G}
-	with open(C,_B)as A:F=json.load(A)
-	F.setdefault(B,0);F[B]+=I
-	with open(C,_C)as A:json.dump(F,A,indent=4)
-	return{_A:f"During proccessing the command, i found out you're the bot owner. Now You won't lose any items from your inventory.\n\nSuccessfully gave {I} of item {H} to {G} without affecting your inventory."}
+	with open(C,_B)as A:I=json.load(A)
+	I.setdefault(B,0);I[B]+=F
+	with open(C,_C)as A:json.dump(I,A,indent=4)
+	print(f"[{int(time.time())%86400//3600:02d}:{int(time.time())%3600//60:02d}:{time.time()%60:02.0f}] [{colorama.Fore.BLUE}INFO{colorama.Style.RESET_ALL}] {from_user_id} gave {F} of item {E} to {D}.");return{_A:f"During proccessing the command, i found out you're the bot owner. Now You won't lose any items from your inventory.\n\nSuccessfully gave {F} of item {E} to {D} without affecting your inventory."}
