@@ -28,28 +28,6 @@ To get started with the Telegram bot, follow these steps:
 - This project copy version of my old telegram bot project but rewritten using python.
 - Since Commit [4626a6b](https://github.com/FloopInc/GumiPY/tree/4626a6bba2ba93255c27fe17f3468748ca05babd), I've created a private fork for the development version of this bot. all tests are done and tried many times in the repo, I will merge to main branch asap when it's ready.
 
-### List Command
-``` 
-/help. Get started help with bot
-/start. Start New Journey with Bot
-/check <version>. Dispatch Checker For some Anime Game
-/ping. Check Bot Status
-/info. Information Retrieval
-/ban <user>. Ban User From Using Bot
-/gacha <Box Name>. Gacha Box
-/sb <message>. Send Public Broadcast (Cost 1 Megaphone/2500 Money)
-/radio. Turn On/off Public Broadcast
-/mods. Show All Available Moderators
-/store buy/sell <item-name> <quantity>. Buy/Sell Item From Store.
-/give <user> <item-name> <quantity>. Give Item To Another User
-/unban <user>. Unban User
-/register <password>. Register Account to Use Bot Feature
-/setacc <username/userid> <value>. Edit Account Information
-/removebg. Remove Background
-/redeemcode <code>. Redeem Code
-/event. <event-name> Toggle Annual Events
-/hotfix. Hotfix Checker For some Anime Game
-```
 ## ❓ Help or issue
 - Unclean & Minified Codes
 - Hardcoded
