@@ -2,14 +2,14 @@
     "questId1": {
         "name": "Astral Chord",
         "type": "Deliver",
-        "description": "questId1_description",
-        "give": [{"1001": 1}, {"1002": 1}],
-        "reward": [{"1000": 1}]
+        "description": "The renowned Astral Chord is here to showcase his fabulous items! He requires 🪙 100x Coins and 💰 50x Gold Coins for his enchanting trade, offering you 💵 2000x Money in return.",
+        "give": [{"1001": 100}, {"1002": 50}],
+        "reward": [{"1000": 2000}]
     },
     "questId2": {
         "name": "Sunroom Siesta",
         "type": "Questions",
-        "description": "",
+        "description": "Sunroom Siesta, the inquisitive dreamer, is here to ask you a perplexing question! Rumor has it that there is a secret to acquiring the prestigious Crown Title in this bot. If you help her uncover this mystery, she will reward you with a shimmering 💎 Blue Gem Coin 1x!",
         "questions": "How do I get Crown Title on this bot?",
         "answers": "Annual Events",
         "reward": [{"1003": 10}]
@@ -17,59 +17,59 @@
     "questId3": {
         "name": "Stellar Symphony",
         "type": "Deliver",
-        "description": "",
-        "give": [{"1005": 1}, {"1001": 1}],
-        "reward": [{"1000": 1}]
+        "description": "The charismatic Stellar Symphony calls upon you to deliver 📦 10x bucks and 🪙 50x coins. In return for your efforts, you will receive 🎤 2x Megaphones to amplify your voice and spread your influence!",
+        "give": [{"1005": 10}, {"1001": 50}],
+        "reward": [{"1010": 2}]
     },
     "questId4": {
-        "name": "Flare Star Butterflies",
+        "name": "Astral Chord",
         "type": "Deliver",
-        "description": "",
-        "give": [{"1000": 1}],
-        "reward": [{"1001": 1}]
+        "description": "The fabulous Astral Chord requires your assistance! Bring him 1000x Money, and he will reward you with 30 Super Mystery Boxes filled with surprise treasures!",
+        "give": [{"1000": 1000}],
+        "reward": [{"1008": 30}]
     },
     "questId5": {
-        "name": "Youhu",
+        "name": "Stellar Symphony",
         "type": "Deliver",
-        "description": "",
-        "give": [{"1001": 1}, {"1000": 1}],
-        "reward": [{"1002": 1}, {"1003": 1}]
+        "description": "The Stellar Symphony seeks your aid once more! Deliver 🪙 100x Coins and 💵 1000x Money, and in return, receive a mystical Moonlight to illuminate your path in the dark.",
+        "give": [{"1001": 100}, {"1000": 1000}],
+        "reward": [{"1012": 1}, {"1009": 1}]
     },
     "questId6": {
         "name": "Sunroom Siesta",
         "type": "Questions",
-        "description": "This is Description for QuestId6",
+        "description": "Sunroom Siesta is eager to learn! Share your wisdom with her by answering her query about the bot's ownership, and she will reward you with 5 Tokens to help you on your journey.",
         "questions": "Who is the owner of this bot?",
         "answers": "Hanamitsuji",
-        "reward": [{"1001": 1}]
+        "reward": [{"1009": 5}]
     },
     "questId7": {
         "name": "Youhu",
         "type": "Deliver",
-        "description": "This is Description for QuestId7",
+        "description": "Youhu, the spirited girl, needs your help! Deliver her 500x Money, and in gratitude, she will present you with a Megaphone to amplify your messages and spread your word!",
         "give": [{"1000": 500}],
-        "reward": [{"1000": 1}]
+        "reward": [{"1010": 1}]
     },
     "questId8": {
         "name": "Flare Star Butterflies",
         "type": "Deliver",
-        "description": "This is Description for QuestId8",
-        "give": [{"1000": 1}],
-        "reward": [{"1000": 1}]
+        "description": "The graceful Flare Star Butterflies require your assistance! Deliver 1x Life Entwined, and in return, receive 100x Mystery Boxes filled with delightful surprises!",
+        "give": [{"1013": 1}],
+        "reward": [{"1007": 100}]
     },
     "questId9": {
         "name": "Youhu",
         "type": "Deliver",
-        "description": "This is Description for QuestId9",
-        "give": [{"1000": 1}, {"1001": 1}, {"1002": 2}],
-        "reward": [{"1001": 1}]
+        "description": "Youhu, seeks your help! She is looking to host an unforgettable celebration! She is preparing a grand festival and needs 5000x Money, 50x Mystery Boxes, and 2x Megaphones to make it truly spectacular. In return, she'll bestow upon you the prestigious Crown Title, a mark of honor that elevates your status among adventurers!",
+        "give": [{"1000": 5000}, {"1007": 50}, {"1010": 2}],
+        "reward": [{"1006": 1}]
     },
     "questId10": {
         "name": "Sunroom Siesta",
         "type": "Questions",
-        "description": "This is Description for QuestId10",
+        "description": "Sunroom Siesta is curious about the role of moderators! Share your insights on their responsibilities, and she will reward you with a generous 💰 50000x Money to support your journey.",
         "questions": "What is the job of a moderator?",
         "answers": "Moderators assist the Developer in managing the bot and oversee all Customer Support matters. They enforce the rules and punish those who breach them. Moderators are here to help with issues, answer questions, and ensure that users have a smooth experience. Do not disturb them with unnecessary or unrelated matters.",
-        "reward": [{"1000": 1}]
+        "reward": [{"1000": 50000}]
     }
 }
