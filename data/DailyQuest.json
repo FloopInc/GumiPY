@@ -10,8 +10,8 @@
         "name": "Sunroom Siesta",
         "type": "Questions",
         "description": "",
-        "questions": "questId2_questions",
-        "answers": "questId2_answers",
+        "questions": "How do I get Crown Title on this bot?",
+        "answers": "Annual Events",
         "reward": [{"1003": 10}]
     },
     "questId3": {
@@ -36,40 +36,40 @@
         "reward": [{"1002": 1}, {"1003": 1}]
     },
     "questId6": {
-        "name": "QuestId6",
+        "name": "Sunroom Siesta",
         "type": "Questions",
         "description": "This is Description for QuestId6",
-        "questions": "questId6_questions",
-        "answers": "questId6_answers",
+        "questions": "Who is the owner of this bot?",
+        "answers": "Hanamitsuji",
         "reward": [{"1001": 1}]
     },
     "questId7": {
-        "name": "QuestId7",
+        "name": "Youhu",
         "type": "Deliver",
         "description": "This is Description for QuestId7",
         "give": [{"1000": 500}],
         "reward": [{"1000": 1}]
     },
     "questId8": {
-        "name": "QuestId8",
+        "name": "Flare Star Butterflies",
         "type": "Deliver",
         "description": "This is Description for QuestId8",
         "give": [{"1000": 1}],
         "reward": [{"1000": 1}]
     },
     "questId9": {
-        "name": "QuestId9",
+        "name": "Youhu",
         "type": "Deliver",
         "description": "This is Description for QuestId9",
         "give": [{"1000": 1}, {"1001": 1}, {"1002": 2}],
         "reward": [{"1001": 1}]
     },
     "questId10": {
-        "name": "QuestId10",
+        "name": "Sunroom Siesta",
         "type": "Questions",
         "description": "This is Description for QuestId10",
-        "questions": "questId10_questions",
-        "answers": "questId10_answers",
+        "questions": "What is the job of a moderator?",
+        "answers": "Moderators assist the Developer in managing the bot and oversee all Customer Support matters. They enforce the rules and punish those who breach them. Moderators are here to help with issues, answer questions, and ensure that users have a smooth experience. Do not disturb them with unnecessary or unrelated matters.",
         "reward": [{"1000": 1}]
     }
 }
