@@ -1,60 +1,133 @@
-_M='data/items.json'
-_L='User data not found.'
-_K='Out of order!'
-_J='Currently unavailable!'
-_I='Out of stock!'
-_H='1000'
-_G='sell'
-_F='buy'
-_E='logo'
-_D='untradeable'
-_C='stock'
-_B='name'
-_A='message'
 import os,json,random,time,colorama
 from handler.economy import loadItems
 from handler.register import getTextMap
+
 def getStoreItems():
-	D=loadItems();B=[]
-	for(E,A)in D.items():
-		if A.get(_D):continue
-		if A[_C]==0:F=[_I,_J,_K,'Check back later!'];C=random.choice(F)
-		else:C=f"Stock: {A[_C]}"
-		B.append({'id':E,_B:A[_B],_E:A[_E],_F:A[_F],_G:A[_G],'stock_message':C})
-	return B
-def buyItem(user_id,item_name,quantity):
-	J=item_name;I=user_id;D=quantity;B=loadItems();H=f"user/{I}.json"
-	if not os.path.exists(H):return{_A:_L}
-	with open(H,'r')as E:F=json.load(E)
-	A=None
-	for(K,L)in B.items():
-		if L[_B].lower()==J.lower():A=K;break
-	if not A or A not in B:return{_A:f"Item '{J}' not found in store."}
-	C=B[A]
-	if C.get(_D):return{_A:getTextMap(_D)}
-	if C[_C]==0:return{_A:random.choice([_I,_J,_K])}
-	G=C[_F]*D
-	if F[_H]<G:return{_A:getTextMap('notEnoughMoney')}
-	F[_H]-=G;B[A][_C]-=D
-	if B[A][_C]<0:B[A][_C]=0
-	F.setdefault(A,0);F[A]+=D
-	with open(H,'w')as E:json.dump(F,E,indent=4)
-	with open(_M,'w')as E:json.dump(B,E,indent=4)
-	print(f"[{int(time.time())%86400//3600:02d}:{int(time.time())%3600//60:02d}:{time.time()%60:02.0f}] [{colorama.Fore.BLUE}INFO{colorama.Style.RESET_ALL}] User {I} bought {D} x {C[_B]} for {G} 💵 Money!");return{_A:f"Successfully purchased {D} x {C[_E]} {C[_B]} for {G} 💵 Money!"}
-def sellItem(user_id,item_name,quantity):
-	J=item_name;I=user_id;B=quantity;D=loadItems();G=f"user/{I}.json"
-	if not os.path.exists(G):return{_A:_L}
-	with open(G,'r')as E:C=json.load(E)
-	A=None
-	for(K,L)in D.items():
-		if L[_B].lower()==J.lower():A=K;break
-	if not A or A not in D:return{_A:f"Item '{J}' not found in inventory."}
-	F=D[A]
-	if F.get(_D):return{_A:getTextMap(_D)}
-	if C.get(A,0)<B:return{_A:"You don't have that item to sell"}
-	H=F[_G]*B;C[A]-=B
-	if C[A]<0:C[A]=0
-	C[_H]+=H;D[A][_C]+=B
-	with open(G,'w')as E:json.dump(C,E,indent=4)
-	with open(_M,'w')as E:json.dump(D,E,indent=4)
-	print(f"[{int(time.time())%86400//3600:02d}:{int(time.time())%3600//60:02d}:{time.time()%60:02.0f}] [{colorama.Fore.BLUE}INFO{colorama.Style.RESET_ALL}] User {I} sold {B} x {F[_B]} for {H} 💵 Money!");return{_A:f"Successfully sold {B} x {F[_E]} {F[_B]} for {H} 💵 Money!"}
+    items = loadItems()
+    store_items = []
+
+    for item_id, item_data in items.items():
+        if item_data.get("untradeable"):
+            continue  # Skip untradeable items
+
+        if item_data["stock"] == 0:
+            out_of_order_messages = [
+                "Out of stock!",
+                "Currently unavailable!",
+                "Out of order!",
+                "Check back later!"
+            ]
+            stock_message = random.choice(out_of_order_messages)
+        else:
+            stock_message = f"Stock: {item_data['stock']}"
+
+        store_items.append({
+            "id": item_id,
+            "name": item_data["name"],
+            "logo": item_data["logo"],
+            "buy": item_data["buy"],
+            "sell": item_data["sell"],
+            "stock_message": stock_message
+        })
+
+    return store_items
+
+def buyItem(user_id: int, item_name: str, quantity: int):
+    items = loadItems()
+    user_filepath = f'user/{user_id}.json'
+    
+    if not os.path.exists(user_filepath):
+        return {"message": "User data not found."}
+
+    with open(user_filepath, 'r') as f:
+        user_data = json.load(f)
+    
+    item_id = None
+    for key, value in items.items():
+        if value["name"].lower() == item_name.lower():
+            item_id = key
+            break
+
+    if not item_id or item_id not in items:
+        return {"message": f"Item '{item_name}' not found in store."}
+    
+    item_data = items[item_id]
+
+    if item_data.get("untradeable"):
+        return {"message": getTextMap("untradeable")}
+    
+    if item_data["stock"] == 0:
+        return {"message": random.choice([
+            "Out of stock!",
+            "Currently unavailable!",
+            "Out of order!"
+        ])}
+
+    total_cost = item_data["buy"] * quantity
+
+    if user_data["1000"] < total_cost:
+        return {"message": getTextMap("notEnoughMoney")}
+
+    user_data["1000"] -= total_cost
+
+    items[item_id]["stock"] -= quantity
+    if items[item_id]["stock"] < 0:
+        items[item_id]["stock"] = 0
+
+    user_data.setdefault(item_id, 0)
+    user_data[item_id] += quantity
+
+    with open(user_filepath, 'w') as f:
+        json.dump(user_data, f, indent=4)
+
+    with open('data/items.json', 'w') as f:
+        json.dump(items, f, indent=4)
+    
+    print(f"[{int(time.time()) % 86400 // 3600:02d}:{(int(time.time()) % 3600) // 60:02d}:{time.time() % 60:02.0f}] [{colorama.Fore.BLUE}INFO{colorama.Style.RESET_ALL}] User {user_id} bought {quantity} x {item_data['name']} for {total_cost} 💵 Money!")
+    return {"message": f"Successfully purchased {quantity} x {item_data['logo']} {item_data['name']} for {total_cost} 💵 Money!"}
+
+def sellItem(user_id: int, item_name: str, quantity: int):
+    items = loadItems()
+    user_filepath = f'user/{user_id}.json'
+    
+    if not os.path.exists(user_filepath):
+        return {"message": "User data not found."}
+
+    with open(user_filepath, 'r') as f:
+        user_data = json.load(f)
+    
+    item_id = None
+    for key, value in items.items():
+        if value["name"].lower() == item_name.lower():
+            item_id = key
+            break
+
+    if not item_id or item_id not in items:
+        return {"message": f"Item '{item_name}' not found in inventory."}
+    
+    item_data = items[item_id]
+
+    if item_data.get("untradeable"):
+        return {"message": getTextMap("untradeable")}
+
+    if user_data.get(item_id, 0) < quantity:
+        return {"message": "You don't have that item to sell"}
+
+    total_sell_price = item_data["sell"] * quantity
+
+    user_data[item_id] -= quantity
+    if user_data[item_id] < 0:
+        user_data[item_id] = 0
+
+    user_data["1000"] += total_sell_price
+
+    items[item_id]["stock"] += quantity
+    
+    with open(user_filepath, 'w') as f:
+        json.dump(user_data, f, indent=4)
+
+    with open('data/items.json', 'w') as f:
+        json.dump(items, f, indent=4)
+    
+    print(f"[{int(time.time()) % 86400 // 3600:02d}:{(int(time.time()) % 3600) // 60:02d}:{time.time() % 60:02.0f}] [{colorama.Fore.BLUE}INFO{colorama.Style.RESET_ALL}] User {user_id} sold {quantity} x {item_data['name']} for {total_sell_price} 💵 Money!")
+    return {"message": f"Successfully sold {quantity} x {item_data['logo']} {item_data['name']} for {total_sell_price} 💵 Money!"}
