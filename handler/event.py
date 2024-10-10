@@ -52,6 +52,14 @@ def toggleBroadcastDay():
 
     return {"event": "BroadcastDay", "status": event_status}
 
+def toggleWeeklyLogin():
+    event_data = loadEventData()
+    event_status = not event_data.get("WeeklyLogin", False)
+    event_data["WeeklyLogin"] = event_status
+
+    saveEventData(event_data)
+    return {"event": "WeeklyLogin", "status": event_status}
+
 def getEventMessage():
     events = loadEventData()
     event_messages = []
@@ -61,6 +69,9 @@ def getEventMessage():
 
     if events.get("BroadcastDay"):
         event_messages.append(getTextMap("BroadcastDay"))
+
+    if events.get("WeeklyLogin"):
+        event_messages.append(getTextMap("WeeklyLogin"))
 
     return "\n\n".join(event_messages) if event_messages else None
 
@@ -96,6 +107,15 @@ async def event_command(update: Update, context: CallbackContext):
         else:
             print(f"[{int(time.time()) % 86400 // 3600:02d}:{(int(time.time()) % 3600) // 60:02d}:{time.time() % 60:02.0f}] [{colorama.Fore.BLUE}INFO{colorama.Style.RESET_ALL}] {user_id}/{update.message.from_user.username} has turned off the CrownDay event!.")
             await update.message.reply_text("CrownDay event is now inactive! Crown Title is back to being untradeable.")
+        return
+    elif event_name == "weeklylogin" or event_name == "weekly" or event_name == "login":
+        result = toggleWeeklyLogin()
+        if result["status"]:
+            await update.message.reply_text("WeeklyLogin event is now active! Users Can now claim /dailylogin rewards.")
+            print(f"[{int(time.time()) % 86400 // 3600:02d}:{(int(time.time()) % 3600) // 60:02d}:{time.time() % 60:02.0f}] [{colorama.Fore.BLUE}INFO{colorama.Style.RESET_ALL}] {user_id}/{update.message.from_user.username} has turned on the WeeklyLogin event!.")
+        else:
+            await update.message.reply_text("WeeklyLogin event is now inactive! Users Can no longer claim /dailylogin rewards.")
+            print(f"[{int(time.time()) % 86400 // 3600:02d}:{(int(time.time()) % 3600) // 60:02d}:{time.time() % 60:02.0f}] [{colorama.Fore.BLUE}INFO{colorama.Style.RESET_ALL}] {user_id}/{update.message.from_user.username} has turned off the WeeklyLogin event!.")
         return
     elif event_name == "broadcastday" or event_name == "megaphone" or event_name == "broadcast" or event_name == "bc":
         result = toggleBroadcastDay()
