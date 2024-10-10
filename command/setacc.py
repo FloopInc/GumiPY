@@ -2,7 +2,7 @@ from telegram import Update
 from telegram.ext import CallbackContext
 from handler.register import loadUserStatus,saveUserStatus,getTextMap,loadOwner
 async def setacc_command(update,context):
-	R='banExpires';Q='isRadio';P='isBanned';O='isHidden';N='isModerator';L='registered';K=context;J='OFF';I='ON';H=False;G=update;S=loadOwner()
+	R='banExpires';Q='isRadio';P='isBanned';O='isHidden';N='isModerator';L='registered';K=context;J='False';I='True';H=False;G=update;S=loadOwner()
 	if not S==G.message.from_user.id:await G.message.reply_text(getTextMap('onlyOwner1'));return
 	if len(K.args)<2:await G.message.reply_text(getTextMap('setUsage'));return
 	E=K.args[0];D=K.args[1].lower();B=loadUserStatus();C=None

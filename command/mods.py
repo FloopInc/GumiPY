@@ -9,11 +9,11 @@ async def mods_command(update: Update, context: CallbackContext):
 
     if str(user_id) in user_status and user_status[str(user_id) ].get("isModerator", False):
         if len(args) > 0 and args[0].lower() == "hide":
-            current_status = user_status[str(user_id) ].get("hidden", False)
-            user_status[str(user_id)]["hidden"] = not current_status
+            current_status = user_status[str(user_id) ].get("isHidden", False)
+            user_status[str(user_id)]["isHidden"] = not current_status
             saveUserStatus(user_status)
 
-            if user_status[str(user_id)]["hidden"]:
+            if user_status[str(user_id)]["isHidden"]:
                 await update.message.reply_text(getTextMap("modHide"))
             else: 
                 await update.message.reply_text(getTextMap("modShow"))
@@ -21,7 +21,7 @@ async def mods_command(update: Update, context: CallbackContext):
         
     mods_list = []
     for mod_id, status in user_status.items():
-        if status.get("isModerator", False) and not status.get("hidden", False):
+        if status.get("isModerator", False) and not status.get("isHidden", False):
             username = "@" + status.get("username", "Unknown")
             mods_list.append(username)
 
