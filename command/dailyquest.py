@@ -1,53 +1,131 @@
-import json,random,time
+import json, random, time
 from telegram import Update
 from telegram.ext import ContextTypes
 from handler.economy import loadItems
-from handler.register import loadUserProfile,saveUserProfile,isBanned,isRegistered,getTextMap
+from handler.register import loadUserProfile, saveUserProfile, isBanned, isRegistered, getTextMap
+
 def load_quests():
-	with open('data/DailyQuest.json','r')as A:return json.load(A)
-async def dailyquest_command(update,context):
-	b='give';a='questions';U='reward';T='logo';S='Questions';R='dailyQuestLastClaim';N=context;M='description';L='type';J='dailyQuestId';H='name';G='Markdown';C=update;O=load_quests();I=loadItems();D=C.message.from_user.id;B=loadUserProfile(D)
-	if isBanned(D):await C.message.reply_text(isBanned(D),parse_mode=G);return
-	if not isRegistered(D):await C.message.reply_text(getTextMap('notRegistered'));return
-	if J in B:
-		V=B.get(R,0);W=int(time.time())
-		if W-V<86400:X=86400-(W-V);c=X//3600;d=X%3600//60;await C.message.reply_text(f"⏳ You have already claimed your quest! Please wait {c} hours and {d} minutes before claiming again.");return
-		A=O[B[J]]
-		if not N.args:
-			if A[L]==S:await C.message.reply_text(f"""📚 >Today's Quest: {A[H]}!< 🌟
-{A[M]}
+    with open('data/DailyQuest.json', 'r') as f:
+        return json.load(f)
 
-*Question:* ❓ _{A[a]}_
+async def dailyquest_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    quests = load_quests()
+    items = loadItems()
+    user_id = update.message.from_user.id
+    user_profile = loadUserProfile(user_id)
 
-💬 To complete this quest, answer the question using `/dailyquest <your answer>`""",parse_mode=G)
-			else:await C.message.reply_text(f"🚀 *Today's Quest: {A[H]}!* 🌟\n{A[M]}\n\n🎁 To complete this quest, you must do `/dailyquest give`.",parse_mode=G)
-			return
-		e=N.args[0].lower()
-		if A[L]=='Deliver'and e==b:
-			Y=A[b];f=all(B.get(C,0)>=D for A in Y for(C,D)in A.items())
-			if f:
-				g=[]
-				for h in Y:
-					for(P,E)in h.items():B[P]-=E;g.append(f"{I[P][T]} {I[P][H]} x{E}")
-				K=[]
-				for Q in A[U]:
-					for(F,E)in Q.items():B[F]=B.get(F,0)+E;K.append(f"{I[F][T]} {I[F][H]} x{E}")
-				saveUserProfile(D,B);await C.message.reply_text(f"🎉 *Congratulations!* You have completed the quest and received:\n"+'\n'.join(K),parse_mode=G);B[R]=int(time.time());B.pop(J,None);saveUserProfile(D,B)
-			else:await C.message.reply_text("🚫 You don't have the required items to complete this quest!")
-		elif A[L]==S:
-			i=A['answers'].lower().strip();j=' '.join(N.args).lower().strip()
-			if j==i:
-				B[R]=int(time.time())
-				for Q in A[U]:
-					for(F,E)in Q.items():B[F]=B.get(F,0)+E
-				saveUserProfile(D,B);K=[f"{I[A][T]} {I[A][H]} x{C}"for B in A[U]for(A,C)in B.items()];await C.message.reply_text(f"🎉 *Correct answer!* You received the following rewards:\n"+'\n'.join(K),parse_mode=G);B.pop(J,None);saveUserProfile(D,B)
-			else:await C.message.reply_text("❌ That's not the correct answer! Please try again.")
-	else:
-		Z=random.choice(list(O.keys()));A=O[Z];B[J]=Z;saveUserProfile(D,B)
-		if A[L]==S:await C.message.reply_text(f"""📚 *Today's Quest: {A[H]}!* 🌟
-{A[M]}
+    if isBanned(user_id):
+        await update.message.reply_text(isBanned(user_id), parse_mode='Markdown')
+        return
+    if not isRegistered(user_id):
+        await update.message.reply_text(getTextMap("notRegistered"))
+        return
+    
+    if 'dailyQuestId' in user_profile:
+        last_claim_time = user_profile.get('dailyQuestLastClaim', 0)
+        current_time = int(time.time())
 
-*Question:* ❓ _{A[a]}_
+        if current_time - last_claim_time < 86400:
+            remaining_time = 86400 - (current_time - last_claim_time)
+            remaining_hours = remaining_time // 3600
+            remaining_minutes = (remaining_time % 3600) // 60
+            await update.message.reply_text(f"⏳ You have already claimed your quest! Please wait {remaining_hours} hours and {remaining_minutes} minutes before claiming again.")
+            return
 
-💬 To complete this quest, answer the question using `/dailyquest <your answer>`""",parse_mode=G)
-		else:await C.message.reply_text(f"🚀 *Today's Quest: {A[H]}!* 🌟\n{A[M]}\n\n🎁 To complete this quest, you must do `/dailyquest give`.",parse_mode=G)
+        today_quest = quests[user_profile['dailyQuestId']]
+        
+        if not context.args:
+            if today_quest['type'] == "Questions":
+                await update.message.reply_text(
+                    f"📚 >Today's Quest: {today_quest['name']}!< 🌟\n"
+                    f"{today_quest['description']}\n\n"
+                    f"*Question:* ❓ _{today_quest['questions']}_\n\n"
+                    "💬 To complete this quest, answer the question using `/dailyquest <your answer>`",
+                parse_mode='Markdown')
+            else:
+                await update.message.reply_text(
+                    f"🚀 *Today's Quest: {today_quest['name']}!* 🌟\n"
+                    f"{today_quest['description']}\n\n"
+                    "🎁 To complete this quest, you must do `/dailyquest give`.",
+                parse_mode='Markdown')
+            return 
+
+        action = context.args[0].lower()
+
+        if today_quest['type'] == "Deliver" and action == "give":
+            required_items = today_quest['give']
+            has_items = all(user_profile.get(item_id, 0) >= quantity for item in required_items for item_id, quantity in item.items())
+
+            if has_items:
+                item_names = []
+                for item in required_items:
+                    for item_id, quantity in item.items():
+                        user_profile[item_id] -= quantity
+                        item_names.append(f"{items[item_id]['logo']} {items[item_id]['name']} x{quantity}")
+
+                reward_names = []
+                for reward in today_quest['reward']:
+                    for reward_id, quantity in reward.items():
+                        user_profile[reward_id] = user_profile.get(reward_id, 0) + quantity
+                        reward_names.append(f"{items[reward_id]['logo']} {items[reward_id]['name']} x{quantity}")
+
+                saveUserProfile(user_id, user_profile)
+
+                await update.message.reply_text(
+                    f"🎉 *Congratulations!* You have completed the quest and received:\n" +
+                    "\n".join(reward_names),
+                    parse_mode='Markdown'
+                )
+
+                user_profile['dailyQuestLastClaim'] = int(time.time())
+                user_profile.pop('dailyQuestId', None) 
+                saveUserProfile(user_id, user_profile)
+
+            else:
+                await update.message.reply_text("🚫 You don't have the required items to complete this quest!")
+
+        elif today_quest['type'] == "Questions":
+            correct_answer = today_quest['answers'].lower().strip()
+            user_answer = ' '.join(context.args).lower().strip()
+            
+            if user_answer == correct_answer:
+                user_profile['dailyQuestLastClaim'] = int(time.time())
+                for reward in today_quest['reward']:
+                    for reward_id, quantity in reward.items():
+                        user_profile[reward_id] = user_profile.get(reward_id, 0) + quantity
+
+                saveUserProfile(user_id, user_profile)
+                reward_names = [f"{items[reward_id]['logo']} {items[reward_id]['name']} x{quantity}" for reward in today_quest['reward'] for reward_id, quantity in reward.items()]
+                await update.message.reply_text(
+                    f"🎉 *Correct answer!* You received the following rewards:\n" +
+                    "\n".join(reward_names),
+                    parse_mode='Markdown'
+                )
+                user_profile.pop('dailyQuestId', None)
+                saveUserProfile(user_id, user_profile)
+            else:
+                await update.message.reply_text("❌ That's not the correct answer! Please try again.")
+
+
+
+    else:
+        quest_id = random.choice(list(quests.keys()))
+        today_quest = quests[quest_id]
+        user_profile['dailyQuestId'] = quest_id
+        saveUserProfile(user_id, user_profile)
+
+        if today_quest['type'] == "Questions":
+            await update.message.reply_text(
+                f"📚 *Today's Quest: {today_quest['name']}!* 🌟\n"
+                f"{today_quest['description']}\n\n"
+                f"*Question:* ❓ _{today_quest['questions']}_\n\n"
+                "💬 To complete this quest, answer the question using `/dailyquest <your answer>`",
+                parse_mode='Markdown'
+            )
+        else:
+            await update.message.reply_text(
+                f"🚀 *Today's Quest: {today_quest['name']}!* 🌟\n"
+                f"{today_quest['description']}\n\n"
+                "🎁 To complete this quest, you must do `/dailyquest give`.",
+                parse_mode='Markdown'
+            )
