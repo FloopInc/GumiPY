@@ -40,7 +40,7 @@ async def hotfix_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "exResourceUrl": hotfix_data.get("exResourceUrl"),
         "luaUrl": hotfix_data.get("luaUrl"),
         "ifixUrl": hotfix_data.get("ifixUrl"),
-        "preDownlloadUrl": hotfix_data.get("preDownloadUrl"),
+        "preDownloadUrl": hotfix_data.get("preDownloadUrl"),
         "customMdkResVersion": hotfix_data.get("customMdkResVersion"),
         "customIfixVersion": hotfix_data.get("customIfixVersion")
     }
