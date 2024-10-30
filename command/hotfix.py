@@ -1,15 +1,15 @@
-import json,os,tempfile
+import json,os,tempfile,requests
 from telegram import Update
 from telegram.ext import ContextTypes
 from handler.register import isRegistered, isBanned, getTextMap
 
-HOTFIX_JSON_PATH = 'data/hotfix.json'
-
-def load_hotfix_data():
-    if not os.path.isfile(HOTFIX_JSON_PATH):
+def load_hotfix():
+    url = f'https://raw.githubusercontent.com/PutraZC/HSR_Data/refs/heads/main/hotfix.json'
+    response = requests.get(url)
+    if response.status_code == 200:
+        return response.json()
+    else:
         return None
-    with open(HOTFIX_JSON_PATH, 'r') as file:
-        return json.load(file)
 
 async def hotfix_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.message.from_user.id
@@ -22,7 +22,7 @@ async def hotfix_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(getTextMap("notRegistered"))
         return
 
-    hotfix_data = load_hotfix_data()
+    hotfix_data = load_hotfix()
     if hotfix_data is None:
         await update.message.reply_text('Hotfix data not found.')
         return
@@ -40,6 +40,7 @@ async def hotfix_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "exResourceUrl": hotfix_data.get("exResourceUrl"),
         "luaUrl": hotfix_data.get("luaUrl"),
         "ifixUrl": hotfix_data.get("ifixUrl"),
+        "preDownlloadUrl": hotfix_data.get("preDownloadUrl"),
         "customMdkResVersion": hotfix_data.get("customMdkResVersion"),
         "customIfixVersion": hotfix_data.get("customIfixVersion")
     }
