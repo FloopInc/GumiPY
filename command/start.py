@@ -2,7 +2,7 @@ from telegram import Update
 from telegram.ext import ContextTypes
 from handler.event import getEventMessage
 from handler.economy import usercd
-from handler.register import isRegistered, isBanned, loadUserStatus, saveUserStatus, getTextMap, loadUserProfile
+from handler.register import isRegistered, isBanned, loadUserStatus, getTextMap, loadUserProfile, userStats
 import time
 from colorama import Fore, Style
 
@@ -17,16 +17,7 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         usercd(user_id, name)
 
     if str(user_id) not in userStatus:
-        userStatus[str(user_id)] = {
-            "username": username,
-            "registered": False,
-            "isBanned": False,
-            "isModerator": False,
-            "isHidden": False,
-            "isRadio": True,
-            "banExpires": 0
-            }
-        saveUserStatus(userStatus)
+        userStats(user_id, username)
         print(f"[{int(time.time()) % 86400 // 3600:02d}:{(int(time.time()) % 3600) // 60:02d}:{time.time() % 60:02.0f}] [{Fore.BLUE}INFO{Style.RESET_ALL}] User {user_id}/{username} started bot.")
         await update.message.reply_text(getTextMap("welcomeUnregistered"))
     else:

@@ -1,22 +1,62 @@
 from telegram import Update
 from telegram.ext import CallbackContext
-from handler.register import loadUserStatus,saveUserStatus,getTextMap,loadOwner
-async def setacc_command(update,context):
-	R='banExpires';Q='isRadio';P='isBanned';O='isHidden';N='isModerator';L='registered';K=context;J='False';I='True';H=False;G=update;S=loadOwner()
-	if not S==G.message.from_user.id:await G.message.reply_text(getTextMap('onlyOwner1'));return
-	if len(K.args)<2:await G.message.reply_text(getTextMap('setUsage'));return
-	E=K.args[0];D=K.args[1].lower();B=loadUserStatus();C=None
-	for(M,T)in B.items():
-		if str(M)==E or T.get('username','').lower()==E.lower():C=M;break
-	if C is None:await G.message.reply_text(getTextMap('notFound'));return
-	if D=='moderator'or D=='mod':A=B[C].get(N,H);B[C][N]=not A;F=f"Set Moderator for {E} to {I if not A else J}."
-	elif D=='hide'or D=='hidden':A=B[C].get(O,H);B[C][O]=not A;F=f"Set Hidden for {E} to {I if not A else J}."
-	elif D=='ban':A=B[C].get(P,H);B[C][P]=not A;F=f"Set Banned for {E} to {I if not A else J}."
-	elif D=='register'or D=='regist'or D==L or D=='reg':A=B[C].get(L,H);B[C][L]=not A;F=f"Set Registered for {E} to {I if not A else J}."
-	elif D=='radio':A=B[C].get(Q,H);B[C][Q]=not A;F=f"Set Radio for {E} to {I if not A else J}."
-	elif D=='resetban'or D=='unban':
-		A=B[C].get(R,0)
-		if A==0:F=f"{E} is not banned.";return
-		B[C][R]=0;F=f"Reset Ban for {E}."
-	else:await G.message.reply_text(getTextMap('statsValue'));return
-	saveUserStatus(B);await G.message.reply_text(F)
+from handler.register import loadUserStatus, saveUserStatus, getTextMap, loadOwner
+
+async def setacc_command(update: Update, context: CallbackContext):
+    ownerID = loadOwner()
+    
+    if not ownerID == update.message.from_user.id:
+        await update.message.reply_text(getTextMap("onlyOwner1"))
+        return
+    if len(context.args) < 2:
+        await update.message.reply_text(getTextMap("setUsage"))
+        return
+
+    target_user = context.args[0]  
+    statusToEdit = context.args[1].lower() 
+    
+    userStats = loadUserStatus()
+
+    target_id = None
+    for user_id, status in userStats.items():
+        if str(user_id) == target_user or status.get("username", "").lower() == target_user.lower():
+            target_id = user_id
+            break
+
+    if target_id is None:
+        await update.message.reply_text(getTextMap("notFound"))
+        return
+    
+    if statusToEdit == "moderator" or statusToEdit == "mod": 
+        current_value = userStats[target_id].get("isModerator", False)
+        userStats[target_id]["isModerator"] = not current_value
+        status_message = f"Set Moderator for {target_user} to {'True' if not current_value else 'False'}."
+    elif statusToEdit == "hide" or statusToEdit == "hidden":
+        current_value = userStats[target_id].get("isHidden", False)
+        userStats[target_id]["isHidden"] = not current_value
+        status_message = f"Set Hidden for {target_user} to {'True' if not current_value else 'False'}."
+    elif statusToEdit == "ban":
+        current_value = userStats[target_id].get("isBanned", False)
+        userStats[target_id]["isBanned"] = not current_value
+        status_message = f"Set Banned for {target_user} to {'True' if not current_value else 'False'}."
+    elif statusToEdit == "register" or statusToEdit == "regist" or statusToEdit == "registered" or statusToEdit == "reg":
+        current_value = userStats[target_id].get("registered", False)
+        userStats[target_id]["registered"] = not current_value
+        status_message = f"Set Registered for {target_user} to {'True' if not current_value else 'False'}."
+    elif statusToEdit == "radio":
+        current_value = userStats[target_id].get("isRadio", False)
+        userStats[target_id]["isRadio"] = not current_value
+        status_message = f"Set Radio for {target_user} to {'True' if not current_value else 'False'}."
+    elif statusToEdit == "resetban" or statusToEdit == "unban":
+        current_value = userStats[target_id].get("banExpires", 0)
+        if current_value == 0:
+            status_message = f"{target_user} is not banned."
+            return
+        userStats[target_id]["banExpires"] = 0
+        status_message = f"Reset Ban for {target_user}."
+    else:
+        await update.message.reply_text(getTextMap("statsValue"))
+        return
+    
+    saveUserStatus(userStats)
+    await update.message.reply_text(status_message)

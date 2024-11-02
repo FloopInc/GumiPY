@@ -1,12 +1,12 @@
 from typing import Final
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters
-import json,os,time,psutil,requests,tempfile
-from command import setacc, editacc, help, start, check, ban, unban, hotfix, info, gacha, give,store,sb,mods,redeemcode,dailyquest
+import json,os,time,psutil,tempfile
+from command import setacc, editacc, help, start, check, ban, unban, hotfix, info, gacha, give,store,sb,mods,redeemcode,dailyquest,search
 from handler.broadcast import radio_command
 from handler.event import getEventMessage, event_command
 from handler.DailyLogin import dailylogin_command
-from handler.register import searchJson, isRegistered, isBanned, getTextMap, loadOwner, register_command
+from handler.register import isRegistered, isBanned, getTextMap, loadOwner, register_command
 from handler import textmap
 from colorama import Fore, Style
 from PIL import Image
@@ -19,16 +19,6 @@ with open('data/config.json') as config_file:
 TOKEN: Final = botToken
 BOT_USERNAME: Final = botUsername
 
-def linkLargeJson():
-    url = 'https://raw.githubusercontent.com/PutraZC/HSR_Data/refs/heads/main/TextMapEN.json'
-    
-    try:
-        response = requests.get(url)
-        response.raise_for_status()
-        return response.json() 
-    except requests.exceptions.RequestException as e:
-        print(f"[{int(time.time()) % 86400 // 3600:02d}:{(int(time.time()) % 3600) // 60:02d}:{time.time() % 60:02.0f}] [{Fore.RED}ERROR{Style.RESET_ALL}] Error fetching JSON From GitHub: {e}")
-    
 def handle_response(text: str) -> str:
     processed: str = text.lower()
 
@@ -117,34 +107,6 @@ async def rules_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         rules_text = file.read()
     await update.message.reply_text(rules_text, parse_mode="Markdown")
 
-async def search_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user_id = update.message.from_user.id
-    message_text = update.message.text.strip()
-    args = message_text.split(" ", 1)
-
-    if isBanned(user_id):
-        await update.message.reply_text(isBanned(user_id), parse_mode="Markdown")
-        return
-    if not isRegistered(user_id):
-        await update.message.reply_text(getTextMap("notRegistered"))
-        return
-    if len(args) < 2:
-        await update.message.reply_text("Please provide a keyword to search.")
-        return
-
-    keyword = args[1] 
-    json_data = linkLargeJson() 
-
-    if json_data:  
-        results, total_found = searchJson(keyword, json_data)  
-
-        if results:
-            response_message = f"HSR (2.5.54) Found {total_found} unique result(s) for '{keyword}':\n\n" + "\n\n".join(results)
-            await update.message.reply_text(response_message) 
-        else:
-            await update.message.reply_text(getTextMap("noResultFound"))
-    else:
-        await update.message.reply_text("Failed to fetch the data from the source.") 
 
 def remove_background(input_image_path, output_image_path):
     input_image = Image.open(input_image_path)
@@ -197,12 +159,27 @@ async def handle_image(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         await update.message.reply_text("Please run /removebg first and then upload an image.")
 
+def cleanup_tempfiles(max_age=3600):
+    temp_dir = tempfile.gettempdir()
+    current_time = time.time()
+    
+    for filename in os.listdir(temp_dir):
+        file_path = os.path.join(temp_dir, filename)
+        
+        if os.path.isfile(file_path) and filename.endswith('.json'):
+            file_age = current_time - os.path.getmtime(file_path)
+            
+            if file_age > max_age:
+                os.remove(file_path)
+                print(f"[{int(time.time()) % 86400 // 3600:02d}:{(int(time.time()) % 3600) // 60:02d}:{time.time() % 60:02.0f}] [{Fore.BLUE}INFO{Style.RESET_ALL}] Deleted temporary file: {file_path}")
+
 async def error(update: Update, context: ContextTypes.DEFAULT_TYPE):
     print(f'Update {update} caused error {context.error}')
 
 if __name__ == "__main__":
     print(f"[{int(time.time()) % 86400 // 3600:02d}:{(int(time.time()) % 3600) // 60:02d}:{time.time() % 60:02.0f}] [{Fore.BLUE}INFO{Style.RESET_ALL}] Starting bot...")
     app = Application.builder().token(TOKEN).build()
+    cleanup_tempfiles()
 
     app.add_handler(CommandHandler("start", start.start_command))
     app.add_handler(CommandHandler("help", help.help_command))
@@ -227,13 +204,42 @@ if __name__ == "__main__":
     app.add_handler(CommandHandler("radio", radio_command))
     app.add_handler(CommandHandler("dailylogin", dailylogin_command))
     app.add_handler(CommandHandler("ping", ping_command))
-    app.add_handler(CommandHandler("search", search_command))
+    app.add_handler(CommandHandler("search", search.search_command))
     app.add_handler(CommandHandler("register", register_command))
     app.add_handler(CommandHandler("removebg", removebg_command))
     app.add_handler(MessageHandler(filters.PHOTO, handle_image))
     app.add_handler(MessageHandler(filters.TEXT & filters.Regex(r'^https?://'), textmap.handle_url))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
     
+    print(f"[{int(time.time()) % 86400 // 3600:02d}:{(int(time.time()) % 3600) // 60:02d}:{time.time() % 60:02.0f}] [{Fore.BLUE}INFO{Style.RESET_ALL}] Loading data files...")
     app.add_error_handler(error)
+    for file in os.listdir("data"):
+        if file.endswith(".json") and not file.startswith("_"):
+            print(f"[{int(time.time()) % 86400 // 3600:02d}:{(int(time.time()) % 3600) // 60:02d}:{time.time() % 60:02.0f}] [{Fore.BLUE}INFO{Style.RESET_ALL}] Loading data file: {file}")
+        if file == "items.json":
+            with open('data/items.json', 'r') as file:
+                items_data = json.load(file)
+                print(f"[{int(time.time()) % 86400 // 3600:02d}:{(int(time.time()) % 3600) // 60:02d}:{time.time() % 60:02.0f}] [{Fore.BLUE}INFO{Style.RESET_ALL}] Loaded {len(items_data)} Item IDs")
+        if file == "Event.json":
+            with open('data/Event.json', 'r') as file:
+                event_data = json.load(file)
+                print(f"[{int(time.time()) % 86400 // 3600:02d}:{(int(time.time()) % 3600) // 60:02d}:{time.time() % 60:02.0f}] [{Fore.BLUE}INFO{Style.RESET_ALL}] Loaded {len(event_data)} Event IDs")
+        if file == "dispatch.json":
+            with open('data/dispatch.json', 'r') as file:
+                dispatch_data = json.load(file)
+                print(f"[{int(time.time()) % 86400 // 3600:02d}:{(int(time.time()) % 3600) // 60:02d}:{time.time() % 60:02.0f}] [{Fore.BLUE}INFO{Style.RESET_ALL}] Loaded {len(dispatch_data)} Dispatch Links")
+        if file == "DailyQuest.json":
+            with open('data/DailyQuest.json', 'r') as file:
+                dailyquest_data = json.load(file)
+                print(f"[{int(time.time()) % 86400 // 3600:02d}:{(int(time.time()) % 3600) // 60:02d}:{time.time() % 60:02.0f}] [{Fore.BLUE}INFO{Style.RESET_ALL}] Loaded {len(dailyquest_data)} Daily Quest")
+        if file == "UserStatus.json":
+            with open('data/UserStatus.json', 'r') as file:
+                userstatus_data = json.load(file)
+                print(f"[{int(time.time()) % 86400 // 3600:02d}:{(int(time.time()) % 3600) // 60:02d}:{time.time() % 60:02.0f}] [{Fore.BLUE}INFO{Style.RESET_ALL}] Loaded {len(userstatus_data)} User Status")
+        if file == "TextMap.json":
+            with open('data/TextMap.json', 'r') as file:
+                textmap_data = json.load(file)
+                print(f"[{int(time.time()) % 86400 // 3600:02d}:{(int(time.time()) % 3600) // 60:02d}:{time.time() % 60:02.0f}] [{Fore.BLUE}INFO{Style.RESET_ALL}] Loaded {len(textmap_data)} TextMap")
     print(f"[{int(time.time()) % 86400 // 3600:02d}:{(int(time.time()) % 3600) // 60:02d}:{time.time() % 60:02.0f}] [{Fore.BLUE}INFO{Style.RESET_ALL}] Polling bot...")
+    print(f"[{int(time.time()) % 86400 // 3600:02d}:{(int(time.time()) % 3600) // 60:02d}:{time.time() % 60:02.0f}] [{Fore.RED}WARN{Style.RESET_ALL}] GUMIPY IS A FREE SOFTWARE & OPEN SOURCE. DO NOT SELL! IF YOU PAID FOR IT, YOU HAVE BEEN SCAMMED!")
     app.run_polling(poll_interval=5)

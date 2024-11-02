@@ -1,35 +1,81 @@
 from telegram import Update
 from telegram.ext import ContextTypes
-from handler.profile import inspectProfile,getUserIdFromUsername
+from handler.profile import inspectProfile, getUserIdFromUsername
 from handler.event import getEventMessage
-from handler.register import isBanned,isRegistered,getTextMap,loadOwner,loadUserProfile,isMod
+from handler.register import isBanned, isRegistered, getTextMap, loadOwner, loadUserProfile, isMod
 import json
-with open('data/items.json','r')as file:items_data=json.load(file)
-async def info_command(update,context):
-	Q='name';P='notFound';O='Markdown';A=update;B=A.message.from_user.id;R=A.message.text.strip();I=loadOwner();E=R.split(' ')
-	if isBanned(B):await A.message.reply_text(isBanned(B),parse_mode=O);return
-	if not isRegistered(B):await A.message.reply_text(getTextMap('notRegistered'));return
-	if B!=I and not isMod(B)and len(E)>1:await A.message.reply_text(getTextMap('onlyOwner1'));return
-	if len(E)>1:
-		F=E[1]
-		if F.startswith('@'):
-			C=getUserIdFromUsername(F[1:])
-			if C is None:await A.message.reply_text(getTextMap(P));return
-		else:C=F
-	else:C=B
-	G,J=inspectProfile(C);K=loadUserProfile(C)
-	if not G:await A.message.reply_text(getTextMap(P));return
-	if K.get('1006',0)>0:D=f"**[👑]KING.`{J}`** Information: \n\n"
-	elif B==I:D=f"{J}'s Information:\n\n"
-	elif C==B:D='Your Information:\n\n'
-	if C!=B:D+=f"**[UID]:** {C}\n\n"
-	if isBanned(C):S=K.get('banReason','Unknown Reason');D+=f"**[🚫]Users is Currently Banned** Reason: {S}\n\n"
-	L=getEventMessage()
-	if L:D+=L+'\n\n'
-	for(H,T)in G.items():
-		if H!=Q and H not in items_data:D+=f"{H}: {T}\n"
-	for(U,M)in items_data.items():
-		V=M[Q];W=M['logo'];N=G.get(U,0)
-		if N>0:D+=f"{W} {V}: {N}\n"
-	if D.strip():await A.message.reply_text(D.strip(),parse_mode=O)
-	else:await A.message.reply_text(getTextMap('errorRequest'))
+
+with open('data/items.json', 'r') as file:
+    items_data = json.load(file)
+
+async def info_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = update.message.from_user.id
+    message_text = update.message.text.strip()
+    ownerID = loadOwner()
+    args = message_text.split(" ")
+    if isBanned(user_id):
+        await update.message.reply_text(isBanned(user_id), parse_mode="Markdown")
+        return
+    if not isRegistered(user_id):
+        await update.message.reply_text(getTextMap("notRegistered"))
+        return
+    
+    if user_id != ownerID and not isMod(user_id) and len(args) > 1:
+        await update.message.reply_text(getTextMap("onlyOwner1"))
+        return
+    
+    if len(args) > 1:
+        target = args[1]
+        if target.startswith("@"):
+            # If it's a username, strip the "@" and find the corresponding user_id
+            targetUserId = getUserIdFromUsername(target[1:])
+            if targetUserId is None:
+                await update.message.reply_text(getTextMap("notFound"))
+                return
+        else:
+            targetUserId = target
+    else:
+        targetUserId = user_id
+
+    profileInfo, targetName = inspectProfile(targetUserId)
+    playerInfo = loadUserProfile(targetUserId)
+
+    if not profileInfo:
+        await update.message.reply_text(getTextMap("notFound"))
+        return
+    
+        
+    if playerInfo.get('1006', 0) > 0:
+        profileMessage = f"**[👑]KING.`{targetName}`** Information: \n\n"
+    elif user_id == ownerID:
+        profileMessage = f"{targetName}'s Information:\n\n"
+    elif targetUserId == user_id:
+        profileMessage = "Your Information:\n\n"
+    
+    if targetUserId != user_id:
+        profileMessage += f"**[UID]:** {targetUserId}\n\n"
+
+    if isBanned(targetUserId):
+        banReason = playerInfo.get('banReason', "Unknown Reason")
+        profileMessage += f"**[🚫]Users is Currently Banned** Reason: {banReason}\n\n"
+
+
+    event_message = getEventMessage()
+    if event_message:
+        profileMessage += event_message + "\n\n"
+
+    for key, value in profileInfo.items():
+        if key != 'name' and key not in items_data:
+            profileMessage += f"{key}: {value}\n"
+
+    for item_id, item_data in items_data.items():
+        item_name = item_data['name']
+        item_logo = item_data['logo']
+        item_quantity = profileInfo.get(item_id, 0)
+        if item_quantity > 0:
+            profileMessage += f"{item_logo} {item_name}: {item_quantity}\n"
+
+    if profileMessage.strip():
+        await update.message.reply_text(profileMessage.strip(), parse_mode='Markdown')
+    else:
+        await update.message.reply_text(getTextMap("errorRequest"))

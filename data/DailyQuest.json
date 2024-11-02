@@ -71,5 +71,42 @@
         "questions": "What is the job of a moderator?",
         "answers": "Moderators assist the Developer in managing the bot and oversee all Customer Support matters. They enforce the rules and punish those who breach them. Moderators are here to help with issues, answer questions, and ensure that users have a smooth experience. Do not disturb them with unnecessary or unrelated matters.",
         "reward": [{"1000": 50000}]
+    },
+    "questId11": {
+        "name": "Flare Star Butterflies",
+        "type": "Deliver",
+        "description": "The enchanting Flare Star Butterflies flutter through the sky, their wings shining with mystic light. These mystical creatures seek your aid to retrieve the rare and breathtaking 🦋 Life Entwined. In gratitude for your generosity, they will reward you with 🎁 60x Super Mystery Boxes, each filled with cosmic wonders just waiting to be discovered!",
+        "give": [{"1013": 1}],
+        "reward": [{"1008": 60}]
+    },
+    "questId12": {
+        "name": "Youhu",
+        "type": "Deliver",
+        "description": "Youhu is brimming with untapped potential and treasures! She needs your assistance to gather 20x Mystery Boxes and 10x Super Mystery Boxes, sharing her abundant wealth with you in return. For your efforts, she will reward you with a generous 💵 20,000 Money and 📦 500 Bucks to enhance your adventures!",
+        "give": [{"1007": 20}, {"1008": 10}],
+        "reward": [{"1000": 20000}, {"1005": 500}]
+    },
+    "questId13": {
+        "name": "Youhu",
+        "type": "Questions",
+        "description": "A voluble and whimsical antique appraiser. Known for creating limericks on the spot, she presents her appraisals with flair and precision. She sets up a stall on the street, ensuring antiques find their way to those who truly cherish them. She seeks your wisdom about her origins. Can you answer this question and unlock the secrets of her story? Answer correctly, and she will grant you reward: 💵 50,000x Money, 💎 500x Blue Gem Coins, and 🌙 1x Moonlight!",
+        "questions": "Who is Japanese Voice Actres of Youhu?",
+        "answers": "Tomita Miyu",
+        "reward": [{"1000": 50000}, {"1003": 100}, {"1012": 1}]
+    },
+    "questId14": {
+        "name":"Stellar Symphony",
+        "type": "Deliver",
+        "description": "Join the celestial gathering of the Stellar Symphony! They need your help to deliver 1x Crown Title, a symbol of prestige and honor. In return for your valuable contribution, you will receive a rich bounty: 50x 🪙 Coins, 50x 💰 Gold Coins, 10x 💎 Blue Gem Coins, 50x 📦 Bucks, 50x 🎁 Mystery Boxes, and 10📢 Megaphones to amplify your legacy!",
+        "give": [{"1006": 1}],
+        "reward": [{"1001": 50}, {"1002": 50}, {"1003": 10}, {"1005": 50}, {"1007": 50}, {"1010": 10}]
+    },
+    "questId15": {
+        "name": "Flare Star Butterflies",
+        "type": "Questions",
+        "description": "The Flare Star Butterflies are not just creatures of beauty—they hold ancient knowledge. They wish to know if you can identify the voice behind the mysterious Shorekeeper, a guardian of the Blackshores. Answer them correctly, and you will be granted immense rewards: 💵 20,000 Money, a majestic 👑 Crown Title, and the elusive 🦋 Life Entwined to weave into the fabric of your fate.",
+        "questions": "Who is Japanese Voice Actres of Shorekeeper?",
+        "answers": "Suwa Ayaka",
+        "reward": [{"1000": 20000}, {"1006": 1}, {"1013": 1}]
     }
 }
