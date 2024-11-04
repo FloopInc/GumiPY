@@ -213,33 +213,24 @@ if __name__ == "__main__":
     
     print(f"[{int(time.time()) % 86400 // 3600:02d}:{(int(time.time()) % 3600) // 60:02d}:{time.time() % 60:02.0f}] [{Fore.BLUE}INFO{Style.RESET_ALL}] Loading data files...")
     app.add_error_handler(error)
+    data_files = {
+    "items.json": ("items_data", "Item IDs"),
+    "Event.json": ("event_data", "Event IDs"),
+    "dispatch.json": ("dispatch_data", "Dispatch Links"),
+    "DailyQuest.json": ("dailyquest_data", "Daily Quest"),
+    "UserStatus.json": ("userstatus_data", "User Status"),
+    "TextMap.json": ("textmap_data", "TextMap")
+    }
+
     for file in os.listdir("data"):
         if file.endswith(".json") and not file.startswith("_"):
             print(f"[{int(time.time()) % 86400 // 3600:02d}:{(int(time.time()) % 3600) // 60:02d}:{time.time() % 60:02.0f}] [{Fore.BLUE}INFO{Style.RESET_ALL}] Loading data file: {file}")
-        if file == "items.json":
-            with open('data/items.json', 'r') as file:
-                items_data = json.load(file)
-                print(f"[{int(time.time()) % 86400 // 3600:02d}:{(int(time.time()) % 3600) // 60:02d}:{time.time() % 60:02.0f}] [{Fore.BLUE}INFO{Style.RESET_ALL}] Loaded {len(items_data)} Item IDs")
-        if file == "Event.json":
-            with open('data/Event.json', 'r') as file:
-                event_data = json.load(file)
-                print(f"[{int(time.time()) % 86400 // 3600:02d}:{(int(time.time()) % 3600) // 60:02d}:{time.time() % 60:02.0f}] [{Fore.BLUE}INFO{Style.RESET_ALL}] Loaded {len(event_data)} Event IDs")
-        if file == "dispatch.json":
-            with open('data/dispatch.json', 'r') as file:
-                dispatch_data = json.load(file)
-                print(f"[{int(time.time()) % 86400 // 3600:02d}:{(int(time.time()) % 3600) // 60:02d}:{time.time() % 60:02.0f}] [{Fore.BLUE}INFO{Style.RESET_ALL}] Loaded {len(dispatch_data)} Dispatch Links")
-        if file == "DailyQuest.json":
-            with open('data/DailyQuest.json', 'r') as file:
-                dailyquest_data = json.load(file)
-                print(f"[{int(time.time()) % 86400 // 3600:02d}:{(int(time.time()) % 3600) // 60:02d}:{time.time() % 60:02.0f}] [{Fore.BLUE}INFO{Style.RESET_ALL}] Loaded {len(dailyquest_data)} Daily Quest")
-        if file == "UserStatus.json":
-            with open('data/UserStatus.json', 'r') as file:
-                userstatus_data = json.load(file)
-                print(f"[{int(time.time()) % 86400 // 3600:02d}:{(int(time.time()) % 3600) // 60:02d}:{time.time() % 60:02.0f}] [{Fore.BLUE}INFO{Style.RESET_ALL}] Loaded {len(userstatus_data)} User Status")
-        if file == "TextMap.json":
-            with open('data/TextMap.json', 'r') as file:
-                textmap_data = json.load(file)
-                print(f"[{int(time.time()) % 86400 // 3600:02d}:{(int(time.time()) % 3600) // 60:02d}:{time.time() % 60:02.0f}] [{Fore.BLUE}INFO{Style.RESET_ALL}] Loaded {len(textmap_data)} TextMap")
+        
+        if file in data_files:
+            var_name, description = data_files[file]
+            with open(f'data/{file}', 'r') as f:
+                globals()[var_name] = json.load(f)
+                print(f"[{int(time.time()) % 86400 // 3600:02d}:{(int(time.time()) % 3600) // 60:02d}:{time.time() % 60:02.0f}] [{Fore.BLUE}INFO{Style.RESET_ALL}] Loaded {len(globals()[var_name])} {description}")
     print(f"[{int(time.time()) % 86400 // 3600:02d}:{(int(time.time()) % 3600) // 60:02d}:{time.time() % 60:02.0f}] [{Fore.BLUE}INFO{Style.RESET_ALL}] Polling bot...")
     print(f"[{int(time.time()) % 86400 // 3600:02d}:{(int(time.time()) % 3600) // 60:02d}:{time.time() % 60:02.0f}] [{Fore.RED}WARN{Style.RESET_ALL}] GUMIPY IS A FREE SOFTWARE & OPEN SOURCE. DO NOT SELL! IF YOU PAID FOR IT, YOU HAVE BEEN SCAMMED!")
     app.run_polling(poll_interval=5)
