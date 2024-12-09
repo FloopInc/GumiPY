@@ -56,6 +56,7 @@ async def package_command(update,context):
 	C=E[0].lower()
 	if C in['gi','genshin','genshinimpact','yuanshen','hk4e']:D=f"https://sg-hyp-api.hoyoverse.com/hyp/hyp-connect/api/getGamePackages?game_ids[]=gopR6Cufr3&launcher_id=VYTpXlbWo8"
 	elif C in['starrail','bhsr','sr','honkaistarrail','hsr','hkrpg']:D=f"https://sg-hyp-api.hoyoverse.com/hyp/hyp-connect/api/getGamePackages?game_ids%5B%5D=4ziysqXOQ8&launcher_id=VYTpXlbWo8"
+	elif C in['zzz','zenless','nap','zenlesszonezero']:D=f"https://sg-hyp-api.hoyoverse.com/hyp/hyp-connect/api/getGamePackages?game_ids[]=U5hbdsT9W7&launcher_id=VYTpXlbWo8"
 	else:await A.message.reply_text('Invalid package name. Please provide a valid package name.');return
 	G,F=loadPackage(D);await A.message.reply_text(G)
 	if F:await A.message.reply_text(F)
