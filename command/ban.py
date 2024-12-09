@@ -23,10 +23,6 @@ async def ban_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     args = message_text.split(" ", 3)
     user_status = loadUserStatus()
 
-    if isBanned(user_id):
-        await update.message.reply_text(getTextMap("userBanned"))
-        return
-    
     if not ownerID == user_id:
         await update.message.reply_text(getTextMap("onlyOwner"))
         return
@@ -54,6 +50,10 @@ async def ban_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 targetUserId = user_id
                 break
 
+    if targetUserId == user_id:
+        await update.message.reply_text("You can't ban yourself!")
+        return
+    
     if isBanned(targetUserId):
         await update.message.reply_text(getTextMap("alrBanned"))
         return

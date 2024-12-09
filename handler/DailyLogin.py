@@ -1,35 +1,116 @@
-import json,time
+import json, time
 from telegram import Update
 from telegram.ext import ContextTypes
 from handler.economy import loadItems
 from handler.event import loadEventData
-from handler.register import isBanned,isRegistered,loadUserProfile,saveUserProfile,getTextMap
+from handler.register import isBanned, isRegistered, loadUserProfile, saveUserProfile, getTextMap
+
 def loadReward():
-	with open('data/DailyReward.json','r')as A:B=json.load(A)
-	return B
-async def dailylogin_command(update,context):
-	b='Error: Item not found.';a='Markdown';Z=False;V='logo';U='name';T='quantity';S='item_id';R='lastClaimTime';O='dailyLogin';B=update;F=B.message.from_user.id;c=B.message.text.strip();W=c.split(' ',1);d=loadEventData();e=d.get('WeeklyLogin',Z)
-	if isBanned(F):await B.message.reply_text(isBanned(F),parse_mode=a);return
-	if not isRegistered(F):await B.message.reply_text(getTextMap('notRegistered'));return
-	if e==Z:await B.message.reply_text('Daily Login Event Not Active');return
-	A=loadUserProfile(F);K=A.get(O,0);X=A.get(R,0);M=int(time.time());H=loadReward();P=loadItems()
-	if len(W)>1 and W[1].lower()=='claim':
-		if M-X<86400:Y=86400-(M-X);f=Y//3600;g=Y%3600//60;await B.message.reply_text(f"⏳ You can claim your daily login rewards again in {f} hours and {g} minutes.");return
-		if K>=len(H):
-			A[O]=1;A[R]=M;saveUserProfile(F,A);L=A[O];E=H[str(L)];D=E[S];G=E[T];C=P.get(D)
-			if C:I=C[U];J=C[V];A[D]=A.get(D,0)+G;saveUserProfile(F,A);await B.message.reply_text(f"Day 7 Reward Claimed. You received: {J} {I} x{G} 🎉")
-			else:await B.message.reply_text(b)
-		else:
-			L=K+1;E=H[str(L)];D=E[S];G=E[T];C=P.get(D)
-			if C:I=C[U];J=C[V];A[D]=A.get(D,0)+G;A[O]=L;A[R]=M;saveUserProfile(F,A);await B.message.reply_text(f"Day {L} reward claimed: {J} {I} x{G} 🎉")
-			else:await B.message.reply_text(b)
-		return
-	N='🎁 Daily Login Rewards 🎁\n\n'
-	for Q in range(1,len(H)+1):
-		E=H[str(Q)];D=E[S];G=E[T];C=P.get(D)
-		if C:I=C[U];J=C[V]
-		else:I='Unknown Item';J=''
-		h='[CLAIMED]'if Q<=K else'[AVAILABLE]';N+=f"Day {Q}: {J} {I} x{G} {h}\n"
-	if K<len(H):N+=f"\nUse `/dailylogin claim` to claim your Day {K+1} reward."
-	else:N+='\nUse `/dailylogin claim` to claim your Day 1 reward.'
-	await B.message.reply_text(N,parse_mode=a)
+    with open('data/DailyReward.json', 'r') as f:
+        rewards = json.load(f)
+    return rewards
+
+async def dailylogin_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = update.message.from_user.id
+    message_text = update.message.text.strip()
+    args = message_text.split(" ", 1)
+    event = loadEventData()
+    event_status = event.get("WeeklyLogin", False)
+
+    if isBanned(user_id):
+        await update.message.reply_text(isBanned(user_id), parse_mode="Markdown")
+        return
+
+    if not isRegistered(user_id):
+        await update.message.reply_text(getTextMap("notRegistered"))
+        return
+    
+    if event_status == False:
+        await update.message.reply_text('Daily Login Event Not Active')
+        return
+    
+    user_data = loadUserProfile(user_id)
+    daily_login = user_data.get("dailyLogin", 0)
+    lastClaimTime = user_data.get("lastClaimTime", 0)
+
+    current_time = int(time.time())
+
+    rewards = loadReward()
+
+    items = loadItems()
+
+    if len(args) > 1 and args[1].lower() == "claim":
+        if current_time - lastClaimTime < 86400:
+            remaining_time = 86400 - (current_time - lastClaimTime)
+            remaining_hours = remaining_time // 3600
+            remaining_minutes = (remaining_time % 3600) // 60
+            await update.message.reply_text(f"⏳ You can claim your daily login rewards again in {remaining_hours} hours and {remaining_minutes} minutes.")
+            return
+        
+        if daily_login >= len(rewards):
+            user_data["dailyLogin"] = 1
+            user_data["lastClaimTime"] = current_time
+            saveUserProfile(user_id, user_data)
+            
+            current_day = user_data["dailyLogin"]
+            reward = rewards[str(current_day)]
+            item_id = reward['item_id']
+            quantity = reward['quantity']
+
+            item = items.get(item_id)
+
+            if item:
+                item_name = item['name']
+                item_logo = item['logo']
+                user_data[item_id] = user_data.get(item_id, 0) + quantity
+                saveUserProfile(user_id, user_data)
+
+                await update.message.reply_text(f"Day 7 Reward Claimed. You received: {item_logo} {item_name} x{quantity} 🎉")
+            else:
+                await update.message.reply_text("Error: Item not found.")
+
+        else:
+            current_day = daily_login + 1
+            reward = rewards[str(current_day)] 
+            item_id = reward['item_id']
+            quantity = reward['quantity']
+
+            item = items.get(item_id)
+
+            if item:
+                item_name = item['name']
+                item_logo = item['logo']
+                user_data[item_id] = user_data.get(item_id, 0) + quantity
+                user_data["dailyLogin"] = current_day
+                user_data["lastClaimTime"] = current_time
+                saveUserProfile(user_id, user_data)
+
+                await update.message.reply_text(f"Day {current_day} reward claimed: {item_logo} {item_name} x{quantity} 🎉")
+            else:
+                await update.message.reply_text("Error: Item not found.")
+
+        return
+    
+    response = "🎁 Daily Login Rewards 🎁\n\n"
+    for i in range(1, len(rewards) + 1):
+        reward = rewards[str(i)]
+        item_id = reward['item_id']
+        quantity = reward['quantity']
+
+        item = items.get(item_id)
+        if item:
+            item_name = item['name']
+            item_logo = item['logo']
+        else:
+            item_name = "Unknown Item"
+            item_logo = ""
+
+        status = "[CLAIMED]" if i <= daily_login else "[AVAILABLE]"
+        response += f"Day {i}: {item_logo} {item_name} x{quantity} {status}\n"
+
+    if daily_login < len(rewards):
+        response += f"\nUse `/dailylogin claim` to claim your Day {daily_login + 1} reward."
+    else:
+        response += "\nUse `/dailylogin claim` to claim your Day 1 reward."
+
+    await update.message.reply_text(response, parse_mode="Markdown")

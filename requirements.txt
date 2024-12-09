@@ -3,3 +3,4 @@ requests
 psutil
 colorama
 rembg
+blackboxprotobuf

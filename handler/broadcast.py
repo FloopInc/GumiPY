@@ -10,16 +10,13 @@ async def handleBroadcast(update: Update, context: ContextTypes.DEFAULT_TYPE, me
     user_filepath = f'user/{user_id}.json'
     ownerID = loadOwner()
     
-    # Check if user data exists
     if not os.path.exists(user_filepath):
         await update.message.reply_text("User data not found.")
         return
 
-    # Load user data
     with open(user_filepath, 'r') as f:
         user_data = json.load(f)
 
-    # Check if user has item 1010 or enough of item 1000
     if user_data.get("1010", 0) > 0:
         user_data["1010"] -= 1
         if user_data["1010"] <= 0:
@@ -34,22 +31,19 @@ async def handleBroadcast(update: Update, context: ContextTypes.DEFAULT_TYPE, me
         await update.message.reply_text("Insufficient items or funds to perform the broadcast.")
         return
     
-    # Get the username
     username = user_data.get("name", "Unknown User")
 
-    # Load all user statuses
     user_status_filepath = 'data/UserStatus.json'
     with open(user_status_filepath, 'r') as f:
         user_status = json.load(f)
 
-    # Iterate through all users and send message to those with isRadio: true
     broadcast_users = [int(uid) for uid, status in user_status.items() if status.get("isRadio")]
 
     profileInfo = loadUserProfile(user_id)
     if user_id == ownerID and profileInfo.get('1006', 0) > 0:
         formatted_message = f"**[👑] @Owner Broadcast From KING.`{username}` [👑]**: {message}"
     elif user_id == ownerID:
-        formatted_message = f"@Owner Broadcast From @ozmoon1337: {message}" #Change @ozmoon1337 to your username
+        formatted_message = f"@Owner Broadcast From @Hanamitsuji: {message}" #Change @Hanamitsuji to your username
     elif profileInfo.get('1006', 0) > 0:
         formatted_message = f"**[👑] Super Broadcast From KING.`{username}` [👑]**: {message}"
     else:

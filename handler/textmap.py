@@ -1,35 +1,75 @@
-_D='Please send the link to the second JSON file.'
-_C='awaiting_file'
-_B='file1'
-_A='file2'
-import tempfile,requests,json
+import tempfile,requests,json,os,time
 from telegram import Update
 from telegram.ext import ContextTypes
+
 def download_file(url):
-	A=requests.get(url);A.raise_for_status();B=tempfile.NamedTemporaryFile(delete=False,suffix='.json')
-	with open(B.name,'wb')as C:C.write(A.content)
-	return B.name
-def compare_json_files(file1,file2):
-	with open(file1,'r')as A,open(file2,'r')as C:D=json.load(A);B=json.load(C)
-	E={A:B[A]for A in B if A not in D and B[A]!='...'};return E
-async def textmapdiff_command(update,context):
-	B=update;A=context.user_data
-	if _B not in A:await B.message.reply_text('Please send the link to the first JSON file.');A[_C]=_B;return
-	elif _A not in A:await B.message.reply_text(_D);A[_C]=_A;return
-async def handle_url(update,context):
-	B=update;F=B.message.text;A=context.user_data
-	if _C in A:
-		C=A[_C]
-		try:
-			G=download_file(F);A[C]=G;del A[_C];await B.message.reply_text(f"Successfully downloaded the file for {C}.")
-			if C==_B:await B.message.reply_text(_D);A[_C]=_A;return
-			elif C==_A:
-				if _B in A and _A in A:
-					H=A[_B];I=A[_A];D=compare_json_files(H,I)
-					if D:
-						E=tempfile.NamedTemporaryFile(delete=False,suffix='.json')
-						with open(E.name,'w')as J:json.dump(D,J,indent=4)
-						await B.message.reply_document(document=open(E.name,'rb'),filename='TextMapDiff.json')
-					else:await B.message.reply_text('No differences found between the two JSON files.')
-					del A[_B];del A[_A]
-		except Exception as K:await B.message.reply_text(f"Failed to download the file: {K}");return
+    response = requests.get(url)
+    response.raise_for_status() 
+    temp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.json')
+    with open(temp_file.name, 'wb') as f:
+        f.write(response.content)
+    return temp_file.name
+
+def compare_json_files(file1, file2):
+    with open(file1, 'r') as f1, open(file2, 'r', encoding='utf-8-sig') as f2:
+        json1 = json.load(f1)
+        json2 = json.load(f2)
+    # diff = {key: json1[key] for key in json1 if key not in json2 or json1[key] != json2[key]}
+    # return diff
+    new_entries = {key: json2[key] for key in json2 if key not in json1 and json2[key] != "..."}
+    return new_entries
+
+async def textmapdiff_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_data = context.user_data
+    
+    if 'file1' not in user_data:
+        await update.message.reply_text("Please send the link to the first JSON file.")
+        user_data['awaiting_file'] = 'file1'
+        return
+    
+    elif 'file2' not in user_data:
+        await update.message.reply_text("Please send the link to the second JSON file.")
+        user_data['awaiting_file'] = 'file2'
+        return
+
+async def handle_url(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    message = update.message.text
+    user_data = context.user_data
+
+    if 'awaiting_file' in user_data:
+        file_key = user_data['awaiting_file']
+        try:
+            downloaded_file = download_file(message)
+            user_data[file_key] = downloaded_file
+            del user_data['awaiting_file']
+
+            await update.message.reply_text(f"Downloading File Please Wait...")
+
+            if file_key == 'file1':
+                await update.message.reply_text("Please send the link to the second JSON file.")
+                user_data['awaiting_file'] = 'file2'
+                return
+
+            elif file_key == 'file2':
+                if 'file1' in user_data and 'file2' in user_data:
+                    file1 = user_data['file1']
+                    file2 = user_data['file2']
+                    diff = compare_json_files(file1, file2)
+
+                    if diff:
+                        result_file = tempfile.NamedTemporaryFile(delete=False, suffix='.json')
+                        with open(result_file.name, 'w', encoding='utf-8') as f:
+                            json.dump(diff, f, indent=4)
+
+                        await update.message.reply_document(document=open(result_file.name, 'rb', encoding='utf-8'), filename="TextMapDiff.json")
+                        os.remove(result_file.name)
+                    else:
+                        await update.message.reply_text("No differences found between the two JSON files.")
+                    
+                    os.remove(file1)
+                    os.remove(file2)
+                    del user_data['file1']
+                    del user_data['file2']
+        except Exception as e:
+            await update.message.reply_text(f"Failed to download the file: {e}")
+            return
