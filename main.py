@@ -1,16 +1,14 @@
 from typing import Final
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters
-import json,os,time,psutil,requests,tempfile
-from command import setacc, editacc, help, start, check, ban, unban, hotfix, info, gacha, give,store,sb,mods,redeemcode,dailyquest
+import json,os,time,psutil,tempfile
+from command import setacc, editacc, package, help, start, check, ban, unban, hotfix, info, gacha, give,store,sb,mods,redeemcode,dailyquest,search
 from handler.broadcast import radio_command
 from handler.event import getEventMessage, event_command
 from handler.DailyLogin import dailylogin_command
-from handler.register import searchJson, isRegistered, isBanned, getTextMap, loadOwner, register_command
+from handler.register import isRegistered, isBanned, getTextMap, loadOwner, register_command
 from handler import textmap
 from colorama import Fore, Style
-from PIL import Image
-from rembg import remove
 
 with open('data/config.json') as config_file:
     config_data = json.load(config_file)
@@ -19,16 +17,6 @@ with open('data/config.json') as config_file:
 TOKEN: Final = botToken
 BOT_USERNAME: Final = botUsername
 
-def linkLargeJson():
-    url = 'https://raw.githubusercontent.com/PutraZC/HSR_Data/refs/heads/main/TextMapEN.json'
-    
-    try:
-        response = requests.get(url)
-        response.raise_for_status()
-        return response.json() 
-    except requests.exceptions.RequestException as e:
-        print(f"[{int(time.time()) % 86400 // 3600:02d}:{(int(time.time()) % 3600) // 60:02d}:{time.time() % 60:02.0f}] [{Fore.RED}ERROR{Style.RESET_ALL}] Error fetching JSON From GitHub: {e}")
-    
 def handle_response(text: str) -> str:
     processed: str = text.lower()
 
@@ -117,85 +105,19 @@ async def rules_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         rules_text = file.read()
     await update.message.reply_text(rules_text, parse_mode="Markdown")
 
-async def search_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user_id = update.message.from_user.id
-    message_text = update.message.text.strip()
-    args = message_text.split(" ", 1)
-
-    if isBanned(user_id):
-        await update.message.reply_text(isBanned(user_id), parse_mode="Markdown")
-        return
-    if not isRegistered(user_id):
-        await update.message.reply_text(getTextMap("notRegistered"))
-        return
-    if len(args) < 2:
-        await update.message.reply_text("Please provide a keyword to search.")
-        return
-
-    keyword = args[1] 
-    json_data = linkLargeJson() 
-
-    if json_data:  
-        results, total_found = searchJson(keyword, json_data)  
-
-        if results:
-            response_message = f"HSR (2.5.54) Found {total_found} unique result(s) for '{keyword}':\n\n" + "\n\n".join(results)
-            await update.message.reply_text(response_message) 
-        else:
-            await update.message.reply_text(getTextMap("noResultFound"))
-    else:
-        await update.message.reply_text("Failed to fetch the data from the source.") 
-
-def remove_background(input_image_path, output_image_path):
-    input_image = Image.open(input_image_path)
-    output_image = remove(input_image)
-    output_image.save(output_image_path)
-
-async def removebg_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user_id = update.message.from_user.id
-
-    if isBanned(user_id):
-        await update.message.reply_text(isBanned(user_id), parse_mode="Markdown")
-        return
-
-    if not isRegistered(user_id):
-        await update.message.reply_text(getTextMap("notRegistered"))
-        return
+def cleanup_tempfiles(max_age=3600):
+    temp_dir = tempfile.gettempdir()
+    current_time = time.time()
     
-    await update.message.reply_text("Please upload an image, and I'll remove the background!")
-
-    context.user_data[user_id] = "waiting_for_image"
-
-async def handle_image(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user_id = update.message.from_user.id
-
-    if context.user_data.get(user_id) == "waiting_for_image":
-        await update.message.reply_text("Processing your image... This might take a few seconds.")
-
-        photo = update.message.photo[-1]
-        file = await context.bot.get_file(photo.file_id)
-
-        with tempfile.TemporaryDirectory() as tmpdirname:
-            input_image_path = os.path.join(tmpdirname, 'input_image.png')
-            output_image_path = os.path.join(tmpdirname, 'output_image.png')
-
-            await file.download_to_drive(input_image_path)
-
-            try:
-                remove_background(input_image_path, output_image_path)
-
-                with open(output_image_path, 'rb') as output_image_file:
-                    await update.message.reply_photo(photo=output_image_file)
-
-                await update.message.reply_text("Done! Here's your image with the background removed.")
-
-            except Exception as e:
-                await update.message.reply_text(getTextMap('errorRequest') + str(e))
-
-        context.user_data[user_id] = None
-
-    else:
-        await update.message.reply_text("Please run /removebg first and then upload an image.")
+    for filename in os.listdir(temp_dir):
+        file_path = os.path.join(temp_dir, filename)
+        
+        if os.path.isfile(file_path) and filename.endswith('.json'):
+            file_age = current_time - os.path.getmtime(file_path)
+            
+            if file_age > max_age:
+                os.remove(file_path)
+                print(f"[{int(time.time()) % 86400 // 3600:02d}:{(int(time.time()) % 3600) // 60:02d}:{time.time() % 60:02.0f}] [{Fore.BLUE}INFO{Style.RESET_ALL}] Deleted temporary file: {file_path}")
 
 async def error(update: Update, context: ContextTypes.DEFAULT_TYPE):
     print(f'Update {update} caused error {context.error}')
@@ -203,13 +125,14 @@ async def error(update: Update, context: ContextTypes.DEFAULT_TYPE):
 if __name__ == "__main__":
     print(f"[{int(time.time()) % 86400 // 3600:02d}:{(int(time.time()) % 3600) // 60:02d}:{time.time() % 60:02.0f}] [{Fore.BLUE}INFO{Style.RESET_ALL}] Starting bot...")
     app = Application.builder().token(TOKEN).build()
+    cleanup_tempfiles()
 
     app.add_handler(CommandHandler("start", start.start_command))
     app.add_handler(CommandHandler("help", help.help_command))
     app.add_handler(CommandHandler("check", check.check_version))
     app.add_handler(CommandHandler("ban", ban.ban_command))
     app.add_handler(CommandHandler("unban", unban.unban_command))
-    app.add_handler(CommandHandler("hotfix", hotfix.hotfix_command))
+    app.add_handler(CommandHandler("hotfix", hotfix.C))
     app.add_handler(CommandHandler("info", info.info_command))
     app.add_handler(CommandHandler("gacha", gacha.gacha_command))
     app.add_handler(CommandHandler("give", give.give_command))
@@ -221,19 +144,38 @@ if __name__ == "__main__":
     app.add_handler(CommandHandler("redeemcode", redeemcode.redeemcode_command))
     app.add_handler(CommandHandler("textmapdiff", textmap.textmapdiff_command))
     app.add_handler(CommandHandler("dailyquest", dailyquest.dailyquest_command))
+    app.add_handler(CommandHandler("package", package.package_command))
+    app.add_handler(CommandHandler("search", search.search_command))
     
     app.add_handler(CommandHandler("event", event_command))
     app.add_handler(CommandHandler("rules", rules_command))
     app.add_handler(CommandHandler("radio", radio_command))
     app.add_handler(CommandHandler("dailylogin", dailylogin_command))
     app.add_handler(CommandHandler("ping", ping_command))
-    app.add_handler(CommandHandler("search", search_command))
     app.add_handler(CommandHandler("register", register_command))
-    app.add_handler(CommandHandler("removebg", removebg_command))
-    app.add_handler(MessageHandler(filters.PHOTO, handle_image))
     app.add_handler(MessageHandler(filters.TEXT & filters.Regex(r'^https?://'), textmap.handle_url))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
     
+    print(f"[{int(time.time()) % 86400 // 3600:02d}:{(int(time.time()) % 3600) // 60:02d}:{time.time() % 60:02.0f}] [{Fore.BLUE}INFO{Style.RESET_ALL}] Loading data files...")
     app.add_error_handler(error)
+    data_files = {
+    "items.json": ("items_data", "Item IDs"),
+    "Event.json": ("event_data", "Event IDs"),
+    "dispatch.json": ("dispatch_data", "Dispatch Links"),
+    "DailyQuest.json": ("dailyquest_data", "Daily Quest"),
+    "UserStatus.json": ("userstatus_data", "User Status"),
+    "TextMap.json": ("textmap_data", "TextMap")
+    }
+
+    for file in os.listdir("data"):
+        if file.endswith(".json") and not file.startswith("_"):
+            print(f"[{int(time.time()) % 86400 // 3600:02d}:{(int(time.time()) % 3600) // 60:02d}:{time.time() % 60:02.0f}] [{Fore.BLUE}INFO{Style.RESET_ALL}] Loading data file: {file}")
+        
+        if file in data_files:
+            var_name, description = data_files[file]
+            with open(f'data/{file}', 'r') as f:
+                globals()[var_name] = json.load(f)
+                print(f"[{int(time.time()) % 86400 // 3600:02d}:{(int(time.time()) % 3600) // 60:02d}:{time.time() % 60:02.0f}] [{Fore.BLUE}INFO{Style.RESET_ALL}] Loaded {len(globals()[var_name])} {description}")
     print(f"[{int(time.time()) % 86400 // 3600:02d}:{(int(time.time()) % 3600) // 60:02d}:{time.time() % 60:02.0f}] [{Fore.BLUE}INFO{Style.RESET_ALL}] Polling bot...")
+    print(f"[{int(time.time()) % 86400 // 3600:02d}:{(int(time.time()) % 3600) // 60:02d}:{time.time() % 60:02.0f}] [{Fore.RED}WARN{Style.RESET_ALL}] GUMIPY IS A FREE SOFTWARE & OPEN SOURCE. DO NOT SELL! IF YOU PAID FOR IT, YOU HAVE BEEN SCAMMED!")
     app.run_polling(poll_interval=5)
